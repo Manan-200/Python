@@ -1,4 +1,3 @@
-from tkinter.tix import Y_REGION
 import pygame
 pygame.font.init()
 
