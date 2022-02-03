@@ -1,0 +1,3 @@
+To download any package of python, open command prompt by typing cmd in search bar. Then type the following command
+py -m pip install [packagename]
+instead of [packagename], type the name of the package without [ and ].
