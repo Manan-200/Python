@@ -1,5 +1,10 @@
 import random
 
+#The concept of the game is that the player has to enter a number, then the bot also prints another number. 
+#The sum of both the numbers should be even. 
+#If the sum is even, the bot's prediction is wrong and if it is odd, the bot's prediction is correct
+#The objective of the bot is to print such a number so that the sum should be odd.
+
 #Variables
 odd_list, even_list = [], []
 odd_probab, even_probab = 0, 0 
