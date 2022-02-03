@@ -27,7 +27,7 @@ while True:
     for num in even_list:
         even_probab += num
 
-    #Chceking for repitition
+    #Checking for repitition
     if len(odd_list) > 2 and len(even_list) > 2:
         if odd_list[-1] == odd_list[-2]:
             odd_probab -= 1
