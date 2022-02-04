@@ -69,8 +69,6 @@ while True:
     x_list.append(planet.x + planet.w/2)
     y_list.append(planet.y + planet.h/2)
 
-    #win.fill((255, 255, 255), ((planet.x, planet.y), (1, 1)))
-
     R = (((star.x + star.w) - planet.x)**2 + ((star.y + star.h) - planet.y)**2)*(1/2)
     accl = G * star.mass / R ** 2
     
