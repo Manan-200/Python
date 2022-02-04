@@ -1,4 +1,5 @@
 #Make pong in pygame
+
 import pygame
 
 width, height = 640, 480
