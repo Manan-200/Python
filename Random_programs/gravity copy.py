@@ -5,6 +5,7 @@ width, height = 1500, 700
 fps = 120
 x_vel, y_vel = 0, 0
 counter = 0
+collided = False
 planet_mass = 6*(10**9)
 star_mass = 6*(10**18)
 G = 6.67 * 10 ** (-11)
@@ -49,6 +50,7 @@ while True:
             quit()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
+                collided = False
                 planet.x, planet.y = 0, height//2
                 x_vel, y_vel = 0, 0
 
@@ -62,13 +64,21 @@ while True:
 
     star = Star(pygame.mouse.get_pos()[0] - 12.5, pygame.mouse.get_pos()[1] - 12.5, 25, 25, star_mass)
 
-    planet.draw()
+    if collided == False:
+        planet.draw()
     star.draw()
 
     win.blit(vel_text, (width - vel_text.get_width(),0))
 
-    R = (((star.x + star.w) - (planet.x + planet.w))**2 + ((star.y + star.h) - (planet.y + planet.h))**2)*(1/2)
-    accl = G * star.mass / R ** 2 
+    R = (((star.x + star.w/2) - (planet.x + planet.w/2))**2 + ((star.y + star.h/2) - (planet.y + planet.h/2))**2)*(1/2)
+    force = G * star.mass * planet.mass / R ** 2
+    accl = force / planet_mass
+
+    if (star.x + star.w/2) - (planet.x + planet.w/2) < 0:
+        accl *= -1
+
+    if planet.Rect.colliderect(star.Rect):
+        collided = True
 
     x_vel += accl
     planet.move_x(x_vel/fps)

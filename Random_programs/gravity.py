@@ -69,7 +69,7 @@ while True:
     x_list.append(planet.x + planet.w/2)
     y_list.append(planet.y + planet.h/2)
 
-    R = (((star.x + star.w) - planet.x)**2 + ((star.y + star.h) - planet.y)**2)*(1/2)
+    R = (((star.x + star.w/2) - (planet.x + planet.w/2))**2 + ((star.y + star.h/2) - (planet.y + planet.h/2))**2)*(1/2)
     accl = G * star.mass / R ** 2
     
     if planet.x - (star.x + star.w/2) < 0:
