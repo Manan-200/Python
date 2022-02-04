@@ -80,6 +80,11 @@ while True:
     if planet.Rect.colliderect(star.Rect):
         collided = True
 
+    if planet.x < -500:
+        x_vel *= -1
+    if planet.x > width + 500:
+        x_vel *= -1
+
     x_vel += accl
     planet.move_x(x_vel/fps)
 
