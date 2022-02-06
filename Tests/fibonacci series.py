@@ -8,4 +8,3 @@ for i in range (1,n+1):
         b = c
         numbers.append(c)
 print (numbers)
-
