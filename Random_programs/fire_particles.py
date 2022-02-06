@@ -22,9 +22,10 @@ class Particles:
 
     def draw(self):
         if self.time < max_time/2 * fps + 4:
-            self.color = (226, 88, 34)
+            self.color = (255, 0, 0)
         if self.time > max_time/2 * fps + 4:
-            self.color = (132, 136, 132)
+            #self.color = (132, 136, 132)
+            self.color = (226, 88, 34)
         self.time += 1
         particle_h = random.randrange(2, 8)
         particle_w = particle_h
