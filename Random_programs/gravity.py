@@ -3,11 +3,11 @@ pygame.font.init()
 
 width, height = 1500, 700
 fps = 120
-x_vel, y_vel = 200, 0
+x_vel, y_vel = 0, 0
 counter = 0
+collided = False
 planet_mass = 6*(10**9)
 star_mass = 6*(10**18)
-x_list, y_list = [], []
 G = 6.67 * 10 ** (-11)
 R = 0
 
@@ -50,8 +50,9 @@ while True:
             quit()
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_r:
+                collided = False
                 planet.x, planet.y = 0, height//2
-                x_vel, y_vel = 200, 0
+                x_vel, y_vel = 0, 0
 
     clock.tick(fps)
 
@@ -63,34 +64,38 @@ while True:
 
     star = Star(pygame.mouse.get_pos()[0] - 12.5, pygame.mouse.get_pos()[1] - 12.5, 25, 25, star_mass)
 
-    planet.draw()
+    if collided == False:
+        planet.draw()
     star.draw()
+
     win.blit(vel_text, (width - vel_text.get_width(),0))
-    x_list.append(planet.x + planet.w/2)
-    y_list.append(planet.y + planet.h/2)
 
     R = (((star.x + star.w/2) - (planet.x + planet.w/2))**2 + ((star.y + star.h/2) - (planet.y + planet.h/2))**2)*(1/2)
-    accl = G * star.mass / R ** 2
-    
-    if planet.x - (star.x + star.w/2) < 0:
-            x_vel += accl
-    if planet.x - (star.x + star.w/2) > 0:
-            x_vel -= accl
-    if planet.y - (star.y + star.h/2) < 0:
-            y_vel += accl
-    if planet.y - (star.y + star.h/2) > 0:
-            y_vel -= accl
+    force = G * star.mass * planet.mass / R ** 2
+    accl_x = force / planet_mass
+    accl_y = force / planet_mass
 
-    if planet.x > width + 200:
+    if (star.x + star.w/2) - (planet.x + planet.w/2) < 0:
+        accl_x *= -1
+    if (star.y + star.h/2) - (planet.y + planet.h/2) < 0:
+        accl_y *= -1
+
+    if planet.Rect.colliderect(star.Rect):
+        collided = True
+
+    if planet.x < -500:
         x_vel *= -1
-    if planet.x < -200:
+    if planet.x > width + 500:
         x_vel *= -1
-    if planet.y > height + 200:
+    if planet.y < -500:
         y_vel *= -1
-    if planet.y < -200:
+    if planet.y > height + 500:
         y_vel *= -1
+
+    x_vel += accl_x
+    y_vel += accl_y
 
     planet.move_x(x_vel/fps)
-    planet.move_y(y_vel/fps)    
+    planet.move_y(y_vel/fps)
 
     pygame.display.update()
