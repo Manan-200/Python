@@ -11,8 +11,8 @@ clock = pygame.time.Clock()
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Pong")
 
-player1Rect = pygame.Rect(10, 10, 20, 100)
-player2Rect = pygame.Rect(width - 30, 10, 20, 100)
+player1Rect = pygame.Rect(10, height/2 - 50, 20, 100)
+player2Rect = pygame.Rect(width - 30, height/2 - 50, 20, 100)
 ballRect = pygame.Rect(width // 2 - 10, height // 2 - 10, 20, 20)
 
 #Loop
