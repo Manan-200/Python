@@ -10,7 +10,7 @@ positive_counter = 0
 negative_counter = 0
 
 win = Tk()
-win.title('Graphing calculator')
+win.title('Equation Solver')
 
 
 def isnt_zero():
