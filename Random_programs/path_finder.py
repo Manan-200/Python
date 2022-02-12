@@ -1,15 +1,26 @@
 import pygame
 import random
 
+pygame.font.init()
+
 #Variables
-nodes, num_list, new_list = [], [], []
+nodes, combination_list, node_combination, distance_list = [], [], [], []
 running = True
 height, width = 600, 800
 dist = 0
-counter_1, counter_2 = 0, 0
+counter_1, counter_2 = 1, 0
+fps = 60
+counter = 0
 
+#Clock
+clock = pygame.time.Clock()
+
+#Window
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Path Finder")
+
+#Font for displaying distance
+dist_font = pygame.font.SysFont("comicsans", 25)
 
 #Node class
 class Node:
@@ -33,7 +44,7 @@ for a in range (1,6):
             for d in range (1,6):
                 for e in range (1,6):
                     if a + b + c + d + e == 15 and a*b*c*d*e == 120:
-                        num_list.append([a, b, c, d, e])
+                        combination_list.append([a, b, c, d, e])
 
 #Function for calculation distance between two nodes
 def distance(node_1, node_2):
@@ -42,33 +53,44 @@ def distance(node_1, node_2):
 
 while running:
 
+    clock.tick(fps)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
             print(dist)
 
+    counter += 1
+
     win.fill((0, 0, 0))
+            
+    #Making node_combination
+    num1 = combination_list[counter_1 - 1]
+    for num2 in num1:
+        for node in nodes:
+            if node.id == num2 and len(node_combination) != 5:
+                node_combination.append(node)
+
+    #Clearing node_combination after every 5 steps
+    if len(node_combination) == 5 and counter%5 == 0:
+        counter_1 += 1
+        node_combination.clear()
+
+    #Calculating distance
+    for i in range(len(node_combination)):
+        if i < 4:
+            dist += distance(node_combination[i], node_combination[i+1])
+        elif i == 4:
+            dist += distance(node_combination[i], node_combination[0])
+    distance_list.append(dist)
+    dist = min(distance_list)
 
     #Drawing nodes
     for node in nodes:
         node.draw()
 
-    #Generating combinations of nodes and adding in new_list
-    for num1 in num_list:
-        for num2 in num1:
-            for node in nodes:
-                if num2 == node.id and counter_1 != 120:
-                    counter_1 += 1
-                    new_list.append([node])
-
-    #Calculating distance between nodes
-    for j in new_list:
-        for i in range(len(j)):
-            if counter_2 != 120:
-                counter_2 += 1
-                if i < 5:
-                    dist += round(distance(j[i], j[i+1]))
-                elif i == 5:
-                    dist += round(distance(j[i - 1], j[i]))
+    #Displaying distance
+    dist_text = dist_font.render(f"Distance : {round(dist)}", 1, (255, 255, 255))
+    win.blit(dist_text, (width - dist_text.get_width() - 10, 10))
 
     pygame.display.update()
