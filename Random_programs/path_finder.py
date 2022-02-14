@@ -1,8 +1,6 @@
 import pygame
 import random
 
-from setuptools_scm import NonNormalizedVersion
-
 pygame.font.init()
 
 #Variables
