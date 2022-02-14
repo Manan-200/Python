@@ -59,6 +59,16 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        #Resetting everything after pressing spacebar
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                nodes, nodes2, node_combination, distance_list = [], [], [], []
+                counter_1, counter = 1, 0
+                dist = 0
+                running = True
+                for i in range (5):
+                    node = Node(i+1)
+                    nodes.append(node)
 
     counter += 1
 
