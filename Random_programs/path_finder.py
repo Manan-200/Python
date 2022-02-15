@@ -22,6 +22,7 @@ pygame.display.set_caption("Path Finder")
 
 #Font for displaying distance
 dist_font = pygame.font.SysFont("comicsans", 25)
+id_font = pygame.font.SysFont("comicsans", 10)
 
 #Node class
 class Node:
@@ -76,7 +77,10 @@ while running:
 
     #Drawing nodes
     for node in nodes:
+        id_text = id_font.render(str(node.id), 1, (255, 0, 0))
         node.draw()
+        win.blit(id_text, (node.x - id_text.get_width()/2, node.y - 10 - id_text.get_height()/2))
+        print(f"Node {node.id} is at ({node.x}, {node.y})")
             
     #Making node_combination
     var1 = combination_list[counter_1 - 1]
@@ -84,40 +88,41 @@ while running:
         for node in nodes:
             if node.id == var2 and len(node_combination) != 5:
                 node_combination.append(node)
-    nodes2.append(node_combination)
+    if len(nodes2) <= 120:
+        nodes2.append(node_combination)
 
-    #Clearing node_combination after every 5 steps
+    #Is implemented after every 2 steps
     if counter % 2 == 0:
         
         if counter <= 120:
             counter_1 += 1
 
+        #Calculating distance between nodes
         for i in range(len(node_combination)):
             if i < 4:
                 dist += distance(node_combination[i], node_combination[i+1])
-                pygame.draw.line(win, (255, 255, 255), (node_combination[i].x, node_combination[i].y), (node_combination[i+1].x, node_combination[i+1].y), 1)
             elif i == 4:
                 dist += distance(node_combination[i], node_combination[0])
-                pygame.draw.line(win, (255, 255, 255), (node_combination[i].x, node_combination[i].y), (node_combination[0].x, node_combination[0].y), 1)
         distance_list.append(dist)
         dist = 0
 
+        #Getting minimum and maximum distance
         max_display_dist = max(distance_list)
         min_display_dist = min(distance_list)
 
-        node_combination.clear()
+        #Connecting nodes with lines
+        var3 = nodes2[distance_list.index(min_display_dist)]
+        for j in range(len(var3)):
+            if j < 4:
+                pygame.draw.line(win, (255, 255, 255), (var3[j].x, var3[j].y), (var3[j+1].x, var3[j+1].y), 1)
+            elif j == 4:
+                pygame.draw.line(win, (255, 255, 255), (var3[j].x, var3[j].y), (var3[0].x, var3[0].y), 1)
 
-        """var3 = nodes2[distance_list.index(min_display_dist)]
-        for i in range(len(var3)):
-            if i < 4:
-                pygame.draw.line(win, (255, 255, 255), (var3[i].x, var3[i].y), (var3[i+1].x, var3[i+1].y), 1)
-            elif i == 4:
-                pygame.draw.line(win, (255, 255, 255), (var3[i].x, var3[i].y), (var3[0].x, var3[0].y), 1)"""
+        #Clearing node_combination
+        node_combination.clear()
 
     #Displaying distance
     min_dist_text = dist_font.render(f"Minimum distance : {round(min_display_dist)}", 1, (255, 255, 255))
-    max_dist_text = dist_font.render(f"Maximum distance : {round(max_display_dist)}", 1, (255, 255, 255))
     win.blit(min_dist_text, (width - min_dist_text.get_width() - 10, 10))
-    win.blit(max_dist_text, (width - max_dist_text.get_width() - 10, 40))
 
     pygame.display.update()
