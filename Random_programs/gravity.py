@@ -3,11 +3,12 @@ pygame.font.init()
 
 width, height = 1500, 700
 fps = 120
-x_vel, y_vel, vel = 150, 50, 0
+xi, yi = 100, -100
+x_vel, y_vel, vel = xi, yi, 0
 counter = 0
 collided = False
-planet_mass = 6*(10)
-star_mass = 12*(10**14)
+planet_mass = 100
+star_mass = 12*(10**16)
 G = 6.67 * 10 ** (-11)
 R = 0
 pos_x_list, pos_y_list = [], []
@@ -48,7 +49,7 @@ class Star(Planet):
         self.Rect = pygame.Rect(self.x, self.y, self.w, self.h)
         pygame.draw.rect(win, (0, 0, 255), self.Rect)
 
-planet = Planet(0, height//2, 5, 5, planet_mass)
+planet = Planet(pygame.mouse.get_pos()[0] + 200, pygame.mouse.get_pos()[1] + 200, 5, 5, planet_mass)
 
 while True:
 
@@ -59,8 +60,10 @@ while True:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 collided = False
-                planet.x, planet.y = 0, height//2
-                x_vel, y_vel = 150, 50
+                planet.x, planet.y = pygame.mouse.get_pos()[0] + 200, pygame.mouse.get_pos()[1] + 200
+                x_vel, y_vel = xi, yi
+                vel = 0
+                pos_x_list, pos_y_list = [], []
 
     clock.tick(fps)
 
@@ -84,14 +87,13 @@ while True:
     accl_y = force / planet_mass
 
     #Calculating velocity
-    if counter % fps == 0 and collided == False:
-        pos_x_list.append(planet.x)
-        pos_y_list.append(planet.y)
-    if len(pos_x_list) > 2 and len(pos_y_list) > 2:
-        pos_x_list.remove(pos_x_list[-1])
-        pos_y_list.remove(pos_y_list[-1])
-    if len(pos_x_list) > 2 and len(pos_y_list) > 0:
-        vel = get_distance(pos_x_list[1], pos_y_list[1], pos_x_list[0], pos_y_list[0])
+    pos_x_list.append(planet.x)
+    pos_y_list.append(planet.y)
+    if len(pos_x_list) > 3 and len(pos_y_list) > 3:
+        pos_x_list.remove(pos_x_list[0])
+        pos_y_list.remove(pos_y_list[0])
+    if len(pos_x_list) >= 2 and len(pos_y_list) >= 2:
+        vel = round(get_distance(pos_x_list[-1], pos_y_list[-1], pos_x_list[-2], pos_y_list[-2]))
 
     #Calculating sign convention of acceleration
     if (star.x + star.w/2) - (planet.x + planet.w/2) < 0:
@@ -113,16 +115,16 @@ while True:
     if planet.y > height + 500:
         y_vel *= -1
 
-    #Adding acceleration to velocites on x and y axis
-    x_vel += accl_x
-    y_vel += accl_y
+    #Adding acceleration to velocites on x and y axis per second
+    x_vel += accl_x/fps
+    y_vel += accl_y/fps
 
-    #Moving the planet
+    #Moving the planet per second
     planet.move_x(x_vel/fps)
     planet.move_y(y_vel/fps)
 
     #Displaying statistics
-    stats_text = stats_font.render((f"x_vel : {round(x_vel)}m/s ; y_vel : {round(y_vel)}m/s ; distance : {round(R)} ; velocity : {vel}"), 1, (255, 255, 255))
-    win.blit(stats_text, (width - stats_text.get_width(),0))
+    stats_text = stats_font.render((f"x_vel : {round(x_vel)} pixels/s ; y_vel : {round(y_vel)} pixels/s ; distance : {round(R)} m ; velocity : {vel} m/s"), 1, (255, 255, 255))
+    win.blit(stats_text, (width/2 - stats_text.get_width()/2, 0))
 
     pygame.display.update()
