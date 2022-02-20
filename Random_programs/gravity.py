@@ -12,8 +12,8 @@ star_mass = 12*(10**16)
 G = 6.67 * 10 ** (-11)
 R = 0
 pos_x_list, pos_y_list = [], []
-barriers = False
-movable = True
+barriers = True
+movable = False
 
 stats_font = pygame.font.SysFont("calibri", 30)
 
@@ -64,7 +64,10 @@ while True:
         #Resetting the variables 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                planet.x, planet.y = pygame.mouse.get_pos()[0] + 200, pygame.mouse.get_pos()[1] + 200
+                if movable:
+                    planet = Planet(pygame.mouse.get_pos()[0] + 200, pygame.mouse.get_pos()[1] + 200, 5, 5, planet_mass)
+                else:
+                    planet = Planet(width/2 + 200, height/2 + 200, 5, 5, planet_mass)
                 x_vel, y_vel = xi, yi
                 vel = 0
                 pos_x_list, pos_y_list = [], []
