@@ -56,7 +56,7 @@ class Star(Planet):
 
 if movable:
     for i in range(planets):
-        planet = Planet(pygame.mouse.get_pos()[0] + random.randrange(-200, 200), pygame.mouse.get_pos()[1] + random.randrange(-200, 200), 1, 1, planet_mass)
+        planet = Planet(pygame.mouse.get_pos()[0] + random.randrange(-200, 200), pygame.mouse.get_pos()[1] + random.randrange(-200, 200), 3, 3, planet_mass)
         planet_list.append(planet)
 else:
     for i in range(planets):
