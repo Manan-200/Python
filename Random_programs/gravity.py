@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 
 pygame.font.init()
 
@@ -12,7 +12,9 @@ star_mass = 12*(10**16)
 G = 6.67 * 10 ** (-11)
 R = 0
 pos_x_list, pos_y_list = [], []
-barriers = True
+planet_list = []
+planets = 2000
+barriers = False
 movable = False
 
 stats_font = pygame.font.SysFont("calibri", 30)
@@ -35,6 +37,7 @@ class Planet:
         self.h = h
         self.mass = mass
         self.Rect = None
+        self.x_vel, self.y_vel = xi, yi
 
     def draw(self):
         self.Rect = pygame.Rect(self.x, self.y, self.w, self.h)
@@ -52,9 +55,13 @@ class Star(Planet):
         pygame.draw.rect(win, (0, 0, 255), self.Rect)
 
 if movable:
-    planet = Planet(pygame.mouse.get_pos()[0] + 200, pygame.mouse.get_pos()[1] + 200, 5, 5, planet_mass)
+    for i in range(planets):
+        planet = Planet(pygame.mouse.get_pos()[0] + random.randrange(-200, 200), pygame.mouse.get_pos()[1] + random.randrange(-200, 200), 5, 5, planet_mass)
+        planet_list.append(planet)
 else:
-    planet = Planet(width/2 + 200, height/2 + 200, 5, 5, planet_mass)
+    for i in range(planets):
+        planet = Planet(width/2 + random.randrange(-200, 200), height/2 + random.randrange(-200, 200), 5, 5, planet_mass)
+        planet_list.append(planet)
 
 while True:
 
@@ -64,13 +71,17 @@ while True:
         #Resetting the variables 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                if movable:
-                    planet = Planet(pygame.mouse.get_pos()[0] + 200, pygame.mouse.get_pos()[1] + 200, 5, 5, planet_mass)
-                else:
-                    planet = Planet(width/2 + 200, height/2 + 200, 5, 5, planet_mass)
-                x_vel, y_vel = xi, yi
+                planet_list = []
                 vel = 0
                 pos_x_list, pos_y_list = [], []
+                if movable:
+                    for i in range(planets):
+                        planet = Planet(pygame.mouse.get_pos()[0] + random.randrange(-200, 200), pygame.mouse.get_pos()[1] + random.randrange(-200, 200), 5, 5, planet_mass)
+                        planet_list.append(planet)
+                else:
+                    for i in range(planets):
+                        planet = Planet(width/2 + random.randrange(-200, 200), height/2 + random.randrange(-200, 200), 5, 5, planet_mass)
+                        planet_list.append(planet)
 
     clock.tick(fps)
 
@@ -81,56 +92,64 @@ while True:
 
     #Making star class at mouse pos if movable is true
     if movable:
-        star = Star(pygame.mouse.get_pos()[0] - 12.5, pygame.mouse.get_pos()[1] - 12.5, 25, 25, star_mass)
+        star = Star(pygame.mouse.get_pos()[0] - (15/2), pygame.mouse.get_pos()[1] - (15/2), 15, 15, star_mass)
     else:
-        star = Star(width/2 - 12.5, height/2 - 12.5, 25, 25, star_mass)
+        star = Star(width/2 - (15/2), height/2 - (15/2), 15, 15, star_mass)
 
-    #Drawing planet and star
-    planet.draw()
-    star.draw()
+    for planet in planet_list:
 
-    #Calculating distance, acceleration and force
-    R = get_distance(star.x + star.w//2, star.y + star.h//2, planet.x + planet.w//2, planet.y + planet.h//2)
-    force = G * star.mass * planet.mass / (R ** 2)
-    accl_x = force / planet_mass
-    accl_y = force / planet_mass
+        #Drawing planet and star
+        planet.draw()
+        star.draw()
 
-    #Calculating velocity
-    pos_x_list.append(planet.x)
-    pos_y_list.append(planet.y)
-    if len(pos_x_list) > 3 and len(pos_y_list) > 3:
-        pos_x_list.remove(pos_x_list[0])
-        pos_y_list.remove(pos_y_list[0])
-    if len(pos_x_list) >= 2 and len(pos_y_list) >= 2:
-        vel = round(get_distance(pos_x_list[-1], pos_y_list[-1], pos_x_list[-2], pos_y_list[-2]))
+        #Calculating distance, acceleration and force
+        R = get_distance(star.x + star.w//2, star.y + star.h//2, planet.x + planet.w//2, planet.y + planet.h//2)
+        force = G * star.mass * planet.mass / (R ** 2)
+        accl_x = force / planet_mass
+        accl_y = force / planet_mass
 
-    #Calculating sign convention of acceleration
-    if (star.x + star.w/2) - (planet.x + planet.w/2) < 0:
-        accl_x *= -1
-    if (star.y + star.h/2) - (planet.y + planet.h/2) < 0:
-        accl_y *= -1
+        #Calculating velocity
+        pos_x_list.append(planet.x)
+        pos_y_list.append(planet.y)
+        if len(pos_x_list) > 3 and len(pos_y_list) > 3:
+            pos_x_list.remove(pos_x_list[0])
+            pos_y_list.remove(pos_y_list[0])
+        if len(pos_x_list) >= 2 and len(pos_y_list) >= 2:
+            vel = round(get_distance(pos_x_list[-1], pos_y_list[-1], pos_x_list[-2], pos_y_list[-2]))
 
-    #Bouncing the planet off the walls if barriers are on
-    if barriers:
-        if planet.x < -500:
-            x_vel *= -1
-        if planet.x > width + 500:
-            x_vel *= -1
-        if planet.y < -500:
-            y_vel *= -1
-        if planet.y > height + 500:
-            y_vel *= -1
+        #Calculating sign convention of acceleration
+        if (star.x + star.w/2) - (planet.x + planet.w/2) < 0:
+            accl_x *= -1
+        if (star.y + star.h/2) - (planet.y + planet.h/2) < 0:
+            accl_y *= -1
 
-    #Adding acceleration to velocites on x and y axis per second
-    x_vel += accl_x/fps
-    y_vel += accl_y/fps
+        #Bouncing the planet off the walls if barriers are on
+        if barriers:
+            if planet.x < -500:
+                planet.x_vel *= -1
+            if planet.x > width + 500:
+                planet.x_vel *= -1
+            if planet.y < -500:
+                planet.y_vel *= -1
+            if planet.y > height + 500:
+                planet.y_vel *= -1
 
-    #Moving the planet per second
-    planet.move_x(x_vel/fps)
-    planet.move_y(y_vel/fps)
+        #Adding acceleration to velocites on x and y axis per second
+        planet.x_vel += accl_x/fps
+        planet.y_vel += accl_y/fps
 
-    #Displaying statistics
-    stats_text = stats_font.render((f"x_vel : {round(x_vel)} pixels/s ; y_vel : {round(y_vel)} pixels/s ; distance : {round(R)} m ; velocity : {vel} m/s"), 1, (255, 255, 255))
-    win.blit(stats_text, (width/2 - stats_text.get_width()/2, 0))
+        #Moving the planet per second
+        planet.move_x(planet.x_vel/fps)
+        planet.move_y(planet.y_vel/fps)
+
+        #Removing planet if it goes out of bounds
+        if planet.x > 1000 or planet.x < -1000 or planet.y > 1000 or planet.y < -1000:
+            planet_list.remove(planet)
+
+        #Displaying statistics
+        """stats_text = stats_font.render((f"x_vel : {round(x_vel)} pixels/s ; y_vel : {round(y_vel)} pixels/s ; distance : {round(R)} m ; velocity : {vel} m/s"), 1, (255, 255, 255))
+        win.blit(stats_text, (width/2 - stats_text.get_width()/2, 0))"""
+    planet_text = stats_font.render((f"Number of planets : {len(planet_list)}"), 1, (255, 255, 255))
+    win.blit(planet_text, (width/2 - planet_text.get_width()/2, 0))
 
     pygame.display.update()
