@@ -8,7 +8,7 @@ xi, yi = 50, -50
 x_vel, y_vel, vel = xi, yi, 0
 counter = 0
 planet_mass = 100
-star_mass = 18*(10**15)
+star_mass = 18*(10**15) * 3
 G = 6.67 * 10 ** (-11)
 R = 0
 pos_x_list, pos_y_list = [], []
@@ -41,7 +41,7 @@ class Planet:
 
     def draw(self):
         self.Rect = pygame.Rect(self.x, self.y, self.w, self.h)
-        pygame.draw.rect(win, (255, 0, 0), self.Rect)
+        pygame.draw.rect(win, (0, 0, 255), self.Rect)
 
     def move_x(self, vel):
         self.x += vel
@@ -52,7 +52,7 @@ class Planet:
 class Star(Planet):
     def draw(self):
         self.Rect = pygame.Rect(self.x, self.y, self.w, self.h)
-        pygame.draw.rect(win, (0, 0, 255), self.Rect)
+        pygame.draw.rect(win, (255, 0, 0), self.Rect)
 
 if movable:
     for i in range(planets):
@@ -60,7 +60,7 @@ if movable:
         planet_list.append(planet)
 else:
     for i in range(planets):
-        planet = Planet(width/2 + random.randrange(-200, 200), height/2 + random.randrange(-200, 200), 3, 3, planet_mass)
+        planet = Planet(width/10 + random.randrange(-200, 200), height/10 + random.randrange(-200, 200), 3, 3, planet_mass)
         planet_list.append(planet)
 
 while True:
@@ -80,7 +80,9 @@ while True:
                         planet_list.append(planet)
                 else:
                     for i in range(planets):
-                        planet = Planet(width/2 + random.randrange(-200, 200), height/2 + random.randrange(-200, 200), 3, 3, planet_mass)
+                        #planet = Planet(width/2 + random.randrange(-200, 200), height/2 + random.randrange(-200, 200), 3, 3, planet_mass)
+                        #planet = Planet(width/10 + random.randrange(-200, 200), height/10 + random.randrange(-200, 200), 3, 3, planet_mass)
+                        planet = Planet(width/10 + random.randrange(-200, 200), 100, 3, 3, planet_mass)
                         planet_list.append(planet)
 
     clock.tick(fps)
@@ -88,13 +90,14 @@ while True:
     counter += 1
 
     #Filling the screen with color
-    win.fill((50, 50, 50))
+    win.fill((0, 0, 0))
 
     #Making star class at mouse pos if movable is true
     if movable:
         star = Star(pygame.mouse.get_pos()[0] - (15/2), pygame.mouse.get_pos()[1] - (15/2), 15, 15, star_mass)
     else:
         star = Star(width/2 - (15/2), height/2 - (15/2), 15, 15, star_mass)
+        #star = Star(width - width/5 - (15/2), height - height/5 - (15/2), 15, 15, star_mass)
 
     for planet in planet_list:
 
