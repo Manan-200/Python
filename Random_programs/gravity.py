@@ -1,4 +1,5 @@
 import pygame
+
 pygame.font.init()
 
 width, height = 1500, 700
@@ -6,12 +7,13 @@ fps = 120
 xi, yi = 100, -100
 x_vel, y_vel, vel = xi, yi, 0
 counter = 0
-collided = False
 planet_mass = 100
 star_mass = 12*(10**16)
 G = 6.67 * 10 ** (-11)
 R = 0
 pos_x_list, pos_y_list = [], []
+barriers = False
+movable = True
 
 stats_font = pygame.font.SysFont("calibri", 30)
 
@@ -49,7 +51,10 @@ class Star(Planet):
         self.Rect = pygame.Rect(self.x, self.y, self.w, self.h)
         pygame.draw.rect(win, (0, 0, 255), self.Rect)
 
-planet = Planet(pygame.mouse.get_pos()[0] + 200, pygame.mouse.get_pos()[1] + 200, 5, 5, planet_mass)
+if movable:
+    planet = Planet(pygame.mouse.get_pos()[0] + 200, pygame.mouse.get_pos()[1] + 200, 5, 5, planet_mass)
+else:
+    planet = Planet(width/2 + 200, height/2 + 200, 5, 5, planet_mass)
 
 while True:
 
@@ -59,7 +64,6 @@ while True:
         #Resetting the variables 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                collided = False
                 planet.x, planet.y = pygame.mouse.get_pos()[0] + 200, pygame.mouse.get_pos()[1] + 200
                 x_vel, y_vel = xi, yi
                 vel = 0
@@ -72,12 +76,14 @@ while True:
     #Filling the screen with color
     win.fill((50, 50, 50))
 
-    #Making star class at mouse pos
-    star = Star(pygame.mouse.get_pos()[0] - 12.5, pygame.mouse.get_pos()[1] - 12.5, 25, 25, star_mass)
+    #Making star class at mouse pos if movable is true
+    if movable:
+        star = Star(pygame.mouse.get_pos()[0] - 12.5, pygame.mouse.get_pos()[1] - 12.5, 25, 25, star_mass)
+    else:
+        star = Star(width/2 - 12.5, height/2 - 12.5, 25, 25, star_mass)
 
     #Drawing planet and star
-    if collided == False:
-        planet.draw()
+    planet.draw()
     star.draw()
 
     #Calculating distance, acceleration and force
@@ -101,19 +107,16 @@ while True:
     if (star.y + star.h/2) - (planet.y + planet.h/2) < 0:
         accl_y *= -1
 
-    #Checking for collision
-    if planet.Rect.colliderect(star.Rect):
-        collided = True
-
-    #Bouncing the planet off the walls
-    if planet.x < -500:
-        x_vel *= -1
-    if planet.x > width + 500:
-        x_vel *= -1
-    if planet.y < -500:
-        y_vel *= -1
-    if planet.y > height + 500:
-        y_vel *= -1
+    #Bouncing the planet off the walls if barriers are on
+    if barriers:
+        if planet.x < -500:
+            x_vel *= -1
+        if planet.x > width + 500:
+            x_vel *= -1
+        if planet.y < -500:
+            y_vel *= -1
+        if planet.y > height + 500:
+            y_vel *= -1
 
     #Adding acceleration to velocites on x and y axis per second
     x_vel += accl_x/fps
