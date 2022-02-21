@@ -22,6 +22,7 @@ stats_font = pygame.font.SysFont("calibri", 30)
 clock = pygame.time.Clock()
 
 win = pygame.display.set_mode((width, height))
+pygame.display.set_caption("Gravity")
 
 def get_distance(x2, y2, x1, y1):
     a = x2 - x1
@@ -52,7 +53,7 @@ class Planet:
 class Star(Planet):
     def draw(self):
         self.Rect = pygame.Rect(self.x, self.y, self.w, self.h)
-        pygame.draw.rect(win, (255, 0, 0), self.Rect)
+        pygame.draw.rect(win, (255, 0, 0), self.Rect) 
 
 if movable:
     for i in range(planets):
@@ -62,6 +63,15 @@ else:
     for i in range(planets):
         planet = Planet(width/10 + random.randrange(-200, 200), height/10 + random.randrange(-200, 200), 3, 3, planet_mass)
         planet_list.append(planet)
+
+def randomize_coords():
+    global c1, c2, c3, c4
+    c1 = pygame.mouse.get_pos()[0] + random.randrange(-200, 200), pygame.mouse.get_pos()[1] + random.randrange(-200, 200)
+    c2 = width/10 + random.randrange(-200, 200), height/10 + random.randrange(-200, 200)
+    c3 = width/2 + random.randrange(-200, 200), height/2 + random.randrange(-200, 200)
+    c4 = width/10 + random.randrange(-200, 200), 100
+
+randomize_coords()
 
 while True:
 
@@ -74,16 +84,11 @@ while True:
                 planet_list = []
                 vel = 0
                 pos_x_list, pos_y_list = [], []
-                if movable:
-                    for i in range(planets):
-                        planet = Planet(pygame.mouse.get_pos()[0] + random.randrange(-200, 200), pygame.mouse.get_pos()[1] + random.randrange(-200, 200), 3, 3, planet_mass)
-                        planet_list.append(planet)
-                else:
-                    for i in range(planets):
-                        #planet = Planet(width/2 + random.randrange(-200, 200), height/2 + random.randrange(-200, 200), 3, 3, planet_mass)
-                        #planet = Planet(width/10 + random.randrange(-200, 200), height/10 + random.randrange(-200, 200), 3, 3, planet_mass)
-                        planet = Planet(width/10 + random.randrange(-200, 200), 100, 3, 3, planet_mass)
-                        planet_list.append(planet)
+                for i in range(planets):
+                    randomize_coords()
+                    coords = c4
+                    planet = Planet(coords[0], coords[1], 3, 3, planet_mass)
+                    planet_list.append(planet)
 
     clock.tick(fps)
 
