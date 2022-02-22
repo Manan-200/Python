@@ -13,7 +13,7 @@ G = 6.67 * 10 ** (-11)
 R = 0
 pos_x_list, pos_y_list = [], []
 planet_list = []
-planets = 1000
+planets = 10000
 barriers = False
 movable = False
 
@@ -66,10 +66,10 @@ else:
 
 def randomize_coords():
     global c1, c2, c3, c4
-    c1 = pygame.mouse.get_pos()[0] + random.randrange(-200, 200), pygame.mouse.get_pos()[1] + random.randrange(-200, 200)
-    c2 = width/10 + random.randrange(-200, 200), height/10 + random.randrange(-200, 200)
-    c3 = width/2 + random.randrange(-200, 200), height/2 + random.randrange(-200, 200)
-    c4 = width/10 + random.randrange(-200, 200), 100
+    c1 = pygame.mouse.get_pos()[0] + random.randrange(-200, 200), pygame.mouse.get_pos()[1] + random.randrange(-200, 200) #Square at mouse
+    c2 = width/10 + random.randrange(-200, 200), height/10 + random.randrange(-200, 200) #Square at top left
+    c3 = width/2 + random.randrange(-200, 200), height/2 + random.randrange(-200, 200) #Square at center
+    c4 = width/10 + random.randrange(-200, 200), 100 #Line at top left 
 
 randomize_coords()
 
@@ -86,7 +86,7 @@ while True:
                 pos_x_list, pos_y_list = [], []
                 for i in range(planets):
                     randomize_coords()
-                    coords = c4
+                    coords = c3
                     planet = Planet(coords[0], coords[1], 3, 3, planet_mass)
                     planet_list.append(planet)
 
@@ -115,6 +115,10 @@ while True:
         force = G * star.mass * planet.mass / (R ** 2)
         accl_x = force / planet_mass
         accl_y = force / planet_mass
+
+        #Removing planet if it goes too far
+        if accl_x < 0.01 and accl_y < 0.01:
+            planet_list.remove(planet)
 
         #Calculating velocity
         pos_x_list.append(planet.x)
@@ -149,10 +153,6 @@ while True:
         #Moving the planet per second
         planet.move_x(planet.x_vel/fps)
         planet.move_y(planet.y_vel/fps)
-
-        #Removing planet if it goes out of bounds
-        if planet.x > 10000 or planet.x < -10000 or planet.y > 10000 or planet.y < -10000:
-            planet_list.remove(planet)
 
         #Displaying statistics
         """stats_text = stats_font.render((f"x_vel : {round(x_vel)} pixels/s ; y_vel : {round(y_vel)} pixels/s ; distance : {round(R)} m ; velocity : {vel} m/s"), 1, (255, 255, 255))
