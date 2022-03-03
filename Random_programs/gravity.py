@@ -1,4 +1,5 @@
-import pygame, random
+import pygame
+import random
 
 pygame.font.init()
 
@@ -6,18 +7,20 @@ width, height = 1500, 700
 fps = 120
 xi, yi = 50, -50
 x_vel, y_vel, vel = xi, yi, 0
-counter = 0
-planet_mass = 100
+counter, counter_1 = 0, 0
+planet_mass = 1
 star_mass = 18*(10**15) * 3
 G = 6.67 * 10 ** (-11)
 R = 0
 pos_x_list, pos_y_list = [], []
 planet_list = []
-planets = 10000
+planets = 1000
 barriers = False
 movable = False
+focussed = False
 
-stats_font = pygame.font.SysFont("calibri", 30)
+stats_font = pygame.font.SysFont("calibri", 20)
+planets_font = pygame.font.SysFont("calibri", 30)
 
 clock = pygame.time.Clock()
 
@@ -64,29 +67,32 @@ else:
         planet = Planet(width/10 + random.randrange(-200, 200), height/10 + random.randrange(-200, 200), 3, 3, planet_mass)
         planet_list.append(planet)
 
-def randomize_coords():
-    global c1, c2, c3, c4
-    c1 = pygame.mouse.get_pos()[0] + random.randrange(-200, 200), pygame.mouse.get_pos()[1] + random.randrange(-200, 200) #Square at mouse
-    c2 = width/10 + random.randrange(-200, 200), height/10 + random.randrange(-200, 200) #Square at top left
-    c3 = width/2 + random.randrange(-200, 200), height/2 + random.randrange(-200, 200) #Square at center
-    c4 = width/10 + random.randrange(-200, 200), 100 #Line at top left 
+pygame.mouse.set_pos(width/2, height/2)
 
-randomize_coords()
-
-while True:
+running = True
+while running:
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            quit()
+            running = False
+
         #Resetting the variables 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                 planet_list = []
                 vel = 0
                 pos_x_list, pos_y_list = [], []
+                focussed = False
+                c = random.choice([1, 2, 3, 4])
                 for i in range(planets):
-                    randomize_coords()
-                    coords = c3
+                    if c == 1:
+                        coords = pygame.mouse.get_pos()[0] + random.randrange(-200, 200), pygame.mouse.get_pos()[1] + random.randrange(-200, 200)
+                    elif c == 2:
+                        coords = width/10 + random.randrange(-200, 200), height/10 + random.randrange(-200, 200)
+                    elif c == 3:
+                        coords = width/2 + random.randrange(-200, 200), height/2 + random.randrange(-200, 200)
+                    elif c == 4:
+                        coords = width/10 + random.randrange(-200, 200), 100
                     planet = Planet(coords[0], coords[1], 3, 3, planet_mass)
                     planet_list.append(planet)
 
@@ -104,11 +110,13 @@ while True:
         star = Star(width/2 - (15/2), height/2 - (15/2), 15, 15, star_mass)
         #star = Star(width - width/5 - (15/2), height - height/5 - (15/2), 15, 15, star_mass)
 
+    #Drawing the star
+    star.draw()
+
     for planet in planet_list:
 
-        #Drawing planet and star
+        #Drawing planet
         planet.draw()
-        star.draw()
 
         #Calculating distance, acceleration and force
         R = get_distance(star.x + star.w//2, star.y + star.h//2, planet.x + planet.w//2, planet.y + planet.h//2)
@@ -119,15 +127,6 @@ while True:
         #Removing planet if it goes too far
         if accl_x < 0.01 and accl_y < 0.01:
             planet_list.remove(planet)
-
-        #Calculating velocity
-        pos_x_list.append(planet.x)
-        pos_y_list.append(planet.y)
-        if len(pos_x_list) > 3 and len(pos_y_list) > 3:
-            pos_x_list.remove(pos_x_list[0])
-            pos_y_list.remove(pos_y_list[0])
-        if len(pos_x_list) >= 2 and len(pos_y_list) >= 2:
-            vel = round(get_distance(pos_x_list[-1], pos_y_list[-1], pos_x_list[-2], pos_y_list[-2]))
 
         #Calculating sign convention of acceleration
         if (star.x + star.w/2) - (planet.x + planet.w/2) < 0:
@@ -154,10 +153,47 @@ while True:
         planet.move_x(planet.x_vel/fps)
         planet.move_y(planet.y_vel/fps)
 
-        #Displaying statistics
-        """stats_text = stats_font.render((f"x_vel : {round(x_vel)} pixels/s ; y_vel : {round(y_vel)} pixels/s ; distance : {round(R)} m ; velocity : {vel} m/s"), 1, (255, 255, 255))
-        win.blit(stats_text, (width/2 - stats_text.get_width()/2, 0))"""
-    planet_text = stats_font.render((f"Number of planets : {len(planet_list)}"), 1, (255, 255, 255))
+    #Displaying stats 1
+    planet_text = planets_font.render((f"Number of planets : {len(planet_list)}"), 1, (255, 255, 255))
     win.blit(planet_text, (width/2 - planet_text.get_width()/2, 0))
+
+    #Focusing on a single planet
+    #Choosing a planet when clicking on it
+    for planet in planet_list:
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            mouse_pos = pygame.mouse.get_pos()
+            if mouse_pos[0] > planet.x - 5 and mouse_pos[0] < planet.x + planet.w + 5 and mouse_pos[1] > planet.y - 5 and mouse_pos[1] < planet.y + planet.h + 5:
+                pos_x_list.clear()
+                pos_y_list.clear()
+                focused_planet = planet
+                focussed = True
+                break
+    if focussed:
+        #Drawing planet outline and line
+        pygame.draw.rect(win, (255, 255, 255), (focused_planet.x - 1, focused_planet.y - 1, focused_planet.w + 1, focused_planet.h + 1), 1)
+        pygame.draw.line(win, (255, 255, 255), (focused_planet.x + focused_planet.w/2, focused_planet.y + focused_planet.h/2), (star.x + star.w/2, star.y + star.h/2), 1)
+
+        #Calculating velocity
+        pos_x_list.append(focused_planet.x)
+        pos_y_list.append(focused_planet.y)
+        if len(pos_x_list) > 1000 and len(pos_y_list) > 1000:
+            pos_x_list.remove(pos_x_list[0])
+            pos_y_list.remove(pos_y_list[0])
+        if len(pos_x_list) >= 2 and len(pos_y_list) >= 2:
+            vel = round(get_distance(pos_x_list[-1], pos_y_list[-1], pos_x_list[-2], pos_y_list[-2]) * fps)
+
+        #Drawing focussed planet's path
+        while counter_1 != len(pos_x_list) and counter_1 != len(pos_y_list):
+            x = round(pos_x_list[counter_1])
+            y = round(pos_y_list[counter_1])
+            n = counter_1 * 255/len(pos_x_list)
+            win.set_at((x, y), (n, n, n))
+            counter_1 += 1
+        counter_1 = 0
+
+        #Displaying stats 2
+        dist = get_distance(star.x + star.w//2, star.y + star.h//2, focused_planet.x + focused_planet.w//2, focused_planet.y + focused_planet.h//2)
+        stats_text = stats_font.render((f"distance : {round(dist)}m ; Instantaneous velocity : {round(vel)}m/s"), 1, (255, 255, 255))
+        win.blit(stats_text, (width/2 - stats_text.get_width()/2, planet_text.get_height()))
 
     pygame.display.update()
