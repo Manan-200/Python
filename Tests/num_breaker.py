@@ -7,4 +7,6 @@ while num != 0:
     reversed_list.append(r)
     num = num // 10
 
-print(reversed_list[::-1])
+reversed_list = reversed_list[::-1]
+
+print(reversed_list)
