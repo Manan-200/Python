@@ -8,13 +8,14 @@ fps = 120
 xi, yi = 50, -50
 x_vel, y_vel, vel = xi, yi, 0
 counter, counter_1 = 0, 0
-planet_mass = 1
-star_mass = 18*(10**15) * 3
+planet_mass = 100
+star_mass = 54*(10**15)
 G = 6.67 * 10 ** (-11)
 R = 0
 pos_x_list, pos_y_list = [], []
 planet_list = []
 planets = 1000
+focused_planet = None
 barriers = False
 movable = False
 focussed = False
@@ -176,7 +177,7 @@ while running:
         #Calculating velocity
         pos_x_list.append(focused_planet.x)
         pos_y_list.append(focused_planet.y)
-        if len(pos_x_list) > 1000 and len(pos_y_list) > 1000:
+        if len(pos_x_list) > 5000 and len(pos_y_list) > 5000:
             pos_x_list.remove(pos_x_list[0])
             pos_y_list.remove(pos_y_list[0])
         if len(pos_x_list) >= 2 and len(pos_y_list) >= 2:
