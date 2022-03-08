@@ -8,7 +8,8 @@ player_vel = 3
 bg_x, bg_y = -500, -500
 fps = 60
 rock_w, rock_h = 50, 50
-rock_list = []
+tree_w, tree_h = 75, 120
+rock_list, tree_list = [], []
 clock = pygame.time.Clock()
 
 #Window
@@ -26,7 +27,14 @@ rock_img_4 = pygame.transform.scale(pygame.image.load(os.path.join("assets", "ro
 rock_img_5 = pygame.transform.scale(pygame.image.load(os.path.join("assets", "rock_imgs", "rock_img_5.png")), (rock_w, rock_h))
 rock_img_6 = pygame.transform.scale(pygame.image.load(os.path.join("assets", "rock_imgs", "rock_img_6.png")), (rock_w + 25, rock_h + 25))
 rock_img_7 = pygame.transform.scale(pygame.image.load(os.path.join("assets", "rock_imgs", "rock_img_7.png")), (rock_w + 25, rock_h + 25))
-#Removing background
+#Tree images
+tree_img_1 = pygame.transform.scale(pygame.image.load(os.path.join("assets", "tree_imgs", "tree_img_1.png")), (tree_w, tree_h))
+tree_img_2 = pygame.transform.scale(pygame.image.load(os.path.join("assets", "tree_imgs", "tree_img_2.png")), (tree_w, tree_h))
+tree_img_3 = pygame.transform.scale(pygame.image.load(os.path.join("assets", "tree_imgs", "tree_img_3.png")), (tree_w, tree_h))
+#tree_img_4 = pygame.transform.scale(pygame.image.load(os.path.join("assets", "tree_imgs", "tree_img_4.png")), (tree_w, tree_h))
+#tree_img_5 = pygame.transform.scale(pygame.image.load(os.path.join("assets", "tree_imgs", "tree_img_5.png")), (tree_w, tree_h))
+#tree_img_6 = pygame.transform.scale(pygame.image.load(os.path.join("assets", "tree_imgs", "tree_img_6.png")), (tree_w, tree_h))
+#Removing background of rocks
 rock_img_1.set_colorkey((255, 255, 255))
 rock_img_2.set_colorkey((246, 246, 246))
 rock_img_3.set_colorkey((255, 255, 255))
@@ -34,6 +42,13 @@ rock_img_4.set_colorkey((220, 240, 244))
 rock_img_5.set_colorkey((220, 240, 244))
 rock_img_6.set_colorkey((220, 240, 244))
 rock_img_7.set_colorkey((220, 240, 244))
+#Removing background of trees
+tree_img_1.set_colorkey((255, 255, 255))
+tree_img_2.set_colorkey((255, 255, 255))
+tree_img_3.set_colorkey((0, 0, 0))
+#tree_img_4.set_colorkey((255, 255, 255))
+#tree_img_5.set_colorkey((255, 255, 255))
+#tree_img_6.set_colorkey((255, 255, 255))
 
 #Player object
 class Player:
@@ -53,15 +68,23 @@ class Rock:
         self.y = random.randrange(1, bg_img.get_height() - 50)
         self.img = random.choice([rock_img_4, rock_img_5, rock_img_6, rock_img_7])
     def draw(self):
-        """self.Rect = pygame.Rect(bg_x + self.x, bg_y + self.y, 10, 10)
-        pygame.draw.rect(win, (128, 132, 135), self.Rect)"""
+        win.blit(self.img, (bg_x + self.x, bg_y + self.y))
+
+class Tree:
+    def __init__(self):
+        self.x = random.randrange(1, bg_img.get_width() - 50)
+        self.y = random.randrange(1, bg_img.get_height() - 50)
+        self.img = random.choice([tree_img_1, tree_img_2])
+    def draw(self):
         win.blit(self.img, (bg_x + self.x, bg_y + self.y))
 
 #Creating player and rock objects
 player = Player(width/2, height/2, 10, 10)
-while len(rock_list) < 25:
+for i in range(20):
         rock = Rock()
+        tree = Tree()
         rock_list.append(rock)
+        tree_list.append(tree)
 
 #Main loop
 running = True
@@ -94,5 +117,7 @@ while running:
     player.draw()
     for rock in rock_list:
         rock.draw()
+    for tree in tree_list:
+        tree.draw()
     
     pygame.display.update()
