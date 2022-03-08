@@ -80,19 +80,20 @@ while running:
         #Resetting the variables 
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
+                planets = 1000
                 planet_list = []
                 vel = 0
                 pos_x_list, pos_y_list = [], []
                 focussed = False
-                c = random.choice([1, 2, 3, 4])
+                c = random.choice([1, 2, 3])
+                if c == 2:
+                    planets = 10000
                 for i in range(planets):
                     if c == 1:
-                        coords = pygame.mouse.get_pos()[0] + random.randrange(-200, 200), pygame.mouse.get_pos()[1] + random.randrange(-200, 200)
-                    elif c == 2:
                         coords = width/10 + random.randrange(-200, 200), height/10 + random.randrange(-200, 200)
-                    elif c == 3:
+                    elif c == 2:
                         coords = width/2 + random.randrange(-200, 200), height/2 + random.randrange(-200, 200)
-                    elif c == 4:
+                    elif c == 3:
                         coords = width/10 + random.randrange(-200, 200), 100
                     planet = Planet(coords[0], coords[1], 3, 3, planet_mass)
                     planet_list.append(planet)
@@ -194,7 +195,7 @@ while running:
 
         #Displaying stats 2
         dist = get_distance(star.x + star.w//2, star.y + star.h//2, focused_planet.x + focused_planet.w//2, focused_planet.y + focused_planet.h//2)
-        stats_text = stats_font.render((f"distance : {round(dist)}m ; Instantaneous velocity : {round(vel)}m/s"), 1, (255, 255, 255))
+        stats_text = stats_font.render((f"distance from star : {round(dist)}m ; Instantaneous velocity : {round(vel)}m/s"), 1, (255, 255, 255))
         win.blit(stats_text, (width/2 - stats_text.get_width()/2, planet_text.get_height()))
 
     pygame.display.update()
