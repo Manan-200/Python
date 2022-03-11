@@ -2,7 +2,7 @@ import pygame
 import os
 import random
 
-pygame.font.init()
+pygame.font.init() #Initializing fonts
 
 #Variables
 width, height = 1000, 600
@@ -12,14 +12,18 @@ fps = 60
 rock_w, rock_h = 50, 50
 tree_w, tree_h = 75, 120
 rock_list, tree_list = [], []
-inventory_dict = {"rock": 0, "wood": 0, "food": 0}
+all_items_dict = {"rock": 0, "wood": 0, "food": 0}
+inventory_dict = {}
 drop_list = []
 inventory_state = False
-item_counter = 1
+index_counter = 1
+main_counter = 0
+hunger_reduction = 0.01
 clock = pygame.time.Clock()
 
-main_inventory_font = pygame.font.SysFont("calibri", 30)
+#Fonts
 inventory_font = pygame.font.SysFont("calibri", 25)
+stats_font = pygame.font.SysFont("calibri", 15)
 
 #Window
 win = pygame.display.set_mode((width, height))
@@ -52,7 +56,12 @@ tree_img_4 = pygame.transform.scale(pygame.image.load(os.path.join("assets", "tr
 wood_drop_img = pygame.transform.scale(pygame.image.load(os.path.join("assets", "wood_drop_img.png")), (77, 31))
 rock_drop_img = pygame.transform.scale(pygame.image.load(os.path.join("assets", "rock_drop_img.png")), (45 * 1.5, 20 * 2))
 
-#Removing background of rocks, trees and player
+#Images for inventory
+inventory_img = pygame.transform.scale(pygame.image.load(os.path.join("assets", "inventory_img.png")), (706, 482))
+inventory_wood_img = pygame.transform.scale(pygame.image.load(os.path.join("assets", "wood_drop_img.png")), (77/1.5, 31/1.5))
+inventory_rock_img = pygame.transform.scale(pygame.image.load(os.path.join("assets", "rock_drop_img.png")), (45 * 1.5/1.5, 20 * 2))
+
+#Removing unnecessary white background
 rock_img_1.set_colorkey((255, 255, 255))
 rock_img_2.set_colorkey((246, 246, 246))
 rock_img_3.set_colorkey((255, 255, 255))
@@ -73,6 +82,9 @@ rock_drop_img.set_colorkey((255, 255, 255))
 
 player_img.set_colorkey((255, 255, 255))
 
+inventory_wood_img.set_colorkey((255, 255, 255))
+inventory_rock_img.set_colorkey((255, 255, 255))
+
 #Player object
 class Player:
     def __init__(self, x, y):
@@ -82,9 +94,20 @@ class Player:
         self.w = self.img.get_width()
         self.h = self.img.get_height()
         self.mask = pygame.mask.from_surface(self.img)
+        self.health = 100
+        self.hunger = 100
     def draw(self):
-        win.blit(self.img, (self.x, self.y))
         self.Rect = pygame.Rect(self.x, self.y, self.w, self.h)
+        win.blit(self.img, (self.x, self.y)) #Drawing player
+        self.healthRect_1 = pygame.Rect(self.x, self.y + self.h + 3, self.w, 2.5)
+        self.healthRect_2 = pygame.Rect(self.x, self.y + self.h + 3, self.w * self.health/100, 2.5)
+        self.hungerRect_1 = pygame.Rect(self.x, self.y + self.h + self.healthRect_1.h + 5, self.w, 2.5)
+        self.hungerRect_2 = pygame.Rect(self.x, self.y + self.h + self.healthRect_1.h + 5, self.w * self.hunger/100, 2.5)
+
+        pygame.draw.rect(win,(255, 0, 0), self.hungerRect_1) 
+        pygame.draw.rect(win, (255, 255, 0), self.hungerRect_2) #Drawing hunger bar
+        pygame.draw.rect(win, (255, 0, 0), self.healthRect_1)
+        pygame.draw.rect(win, (0, 255, 0), self.healthRect_2) #Drawing health bar
 
 #Rock object
 class Rock:
@@ -116,6 +139,7 @@ class Tree:
         win.blit(self.img, (bg_x + self.x, bg_y + self.y))
         self.Rect = pygame.Rect(bg_x + self.x, bg_y + self.y, self.w, self.h)
 
+#Drop object
 class Drop:
     def __init__(self, x, y, h, type):
         self.x = x
@@ -143,7 +167,7 @@ def get_distance(x2, y2, x1, y1):
     c = (a**2 + b**2)**0.5
     return c
 
-#Creating player and rock objects
+#Creating player, rock and tree objects
 player = Player(width/2, height/2)
 for i in range(25):
         rock = Rock()
@@ -155,7 +179,7 @@ for i in range(25):
 running = True
 while running:
 
-    clock.tick(fps)
+    main_counter += 1
 
     #Quitting the game if cross button is pressed
     for event in pygame.event.get():
@@ -165,79 +189,123 @@ while running:
     #Filling window with black color
     win.fill((200, 200, 200))
     
-    #Detecting movement
+    #Detecting keys pressed
     keys = pygame.key.get_pressed()
     if inventory_state == False:
-        if keys[pygame.K_a] and player.x - player.h > bg_x:
+        #Basic movements
+        if keys[pygame.K_a] and player.x > bg_x:
             bg_x += player_vel
+            player.hunger -= hunger_reduction
         if keys[pygame.K_d] and player.x + player.h < bg_x + bg_img.get_width():
             bg_x -= player_vel
-        if keys[pygame.K_w] and player.y - player.h > bg_y:
+            player.hunger -= hunger_reduction
+        if keys[pygame.K_w] and player.y > bg_y:
             bg_y += player_vel
+            player.hunger -= hunger_reduction
         if keys[pygame.K_s] and player.y + player.h < bg_y + bg_img.get_height():
             bg_y -= player_vel
+            player.hunger -= hunger_reduction
+
+        #Increasing speed of player if ctrl is pressed
         if keys[pygame.K_LCTRL]:
             player_vel = 6
+            hunger_reduction = 0.02
         else:
             player_vel = 3
+            hunger_reduction = 0.01
 
+    #Things to be done per second
+    if main_counter % fps == 0:
+        player.hunger -= 0.001 #Increasing hunger
+        if player.hunger <= 0:
+            player.hunger = 0
+            player.health -= 0.1 #Decreasing health
+            player_vel = 1
+            if player.health <= 0:
+                player.health = 0
+                running = False #Quitting the game if health is 0
+
+    #Keys for showing inventory
     if keys[pygame.K_e]:
         inventory_state = True
     if keys[pygame.K_ESCAPE]:
         inventory_state = False
     
+    #Adding items in inventory_dict from all_items_dict if its value is greater than 0
+    for item in all_items_dict:
+        if all_items_dict[item] > 0:
+            inventory_dict[item] = all_items_dict[item]
+
     #Drawing background
     win.blit(bg_img, (bg_x, bg_y))
 
+    #Getting postion of mouse
     mouse_pos = pygame.mouse.get_pos()
 
-    #Drawing player, rocks and trees
+    #Handling rocks
     for rock in rock_list:
-        rock.draw()
+        #Drawing rocks
+        rock.draw() 
+        #Reducing rock's strength if player is near it and mouse is clicked on rock
         if event.type == pygame.MOUSEBUTTONDOWN:
             if mouse_pos[0] > rock.Rect.x and mouse_pos[0] < rock.Rect.x + rock.Rect.w and mouse_pos[1] > rock.Rect.y and mouse_pos[1] < rock.Rect.y + rock.Rect.h:
                 if get_distance(player.x + player.w/2, player.y + player.h/2, rock.Rect.x + rock.w/2, rock.Rect.y + rock.h/2) < 75:
                     rock.strength -= 1
+        #Adding rock to drop_list and removing it from rock_list if its strength is 0                    
         if rock.strength == 0:
             for i in range(rock.drops):
                 drop = Drop(rock.x, rock.y + i*5, rock.h, "rock")
                 drop_list.append(drop)
             rock_list.remove(rock)
 
+    #Handling trees
     for tree in tree_list:
+        #Drawing trees
         tree.draw()
+        #Reducing tree's strength if player is near it and mouse is clicked on tree
         if event.type == pygame.MOUSEBUTTONDOWN:
             if mouse_pos[0] > tree.Rect.x and mouse_pos[0] < tree.Rect.x + tree.Rect.w and mouse_pos[1] > tree.Rect.y and mouse_pos[1] < tree.Rect.y + tree.Rect.h:
                 if get_distance(player.x + player.w/2, player.y + player.h/2, tree.Rect.x + tree.w/2, tree.Rect.y + tree.h*3/4) < 50:
                     tree.strength -= 1
+        #Adding tree to drop_list and removing it from tree_list if its strength is 0
         if tree.strength == 0:
             for i in range(tree.drops):
                 drop = Drop(tree.x, tree.y + i*10, tree.h, "wood")
                 drop_list.append(drop)
             tree_list.remove(tree)
 
+    #Handling drops
     for drops in drop_list:
+        #Drawing drops
         drops.draw()
+        #Updating value of drop in all_items_dict and removing it from drop_list if player is near it
         if get_distance(player.x + player.w/2, player.y + player.h/2, drops.x + drops.w/2 + bg_x, drops.y + drops.h/2 + bg_y) < 20:
             if drop.type == "wood":
-                inventory_dict["wood"] += 1
+                all_items_dict["wood"] += 1
             elif drop.type == "rock":
-                inventory_dict["rock"] += 1
+                all_items_dict["rock"] += 1
             drop_list.remove(drops)
-    
+
+    #Drawing player
     player.draw()
 
+    #Handling inventory
     if inventory_state:
-        inventory_Rect = pygame.Rect(100, 100, width - 200, height - 200)
-        pygame.draw.rect(win, (0, 255, 0), inventory_Rect)
+        #Drawing inventory
+        inventoryRect = pygame.Rect(100, 100, width - inventory_img.get_width()/2, height - inventory_img.get_height()/2)
+        win.blit(inventory_img, (inventoryRect.x, inventoryRect.y))
+        
+        #Drawing items on inventory menu
         for item in inventory_dict:
-            item_text = inventory_font.render(item + ":" + str(inventory_dict[item]), 1, (0, 0, 0))
-            win.blit(item_text, (inventory_Rect.x + 10, inventory_Rect.y + 50 + item_counter * 25))
-            if item_counter < len(inventory_dict):
-                item_counter += 1
-        item_counter = 0
+            if item == "wood":
+                item_img = inventory_wood_img
+            elif item == "rock":
+                item_img = inventory_rock_img
+            inventory_img.blit(item_img, (inventoryRect.x + 252.5, inventoryRect.y + 3 + (index_counter * 55)))
+            if index_counter < len(inventory_dict):
+                index_counter += 1
 
-        main_inventory_text = main_inventory_font.render("INVENTORY", 1, (0, 0, 0))
-        win.blit(main_inventory_text, (inventory_Rect.x + inventory_Rect.w/2 - main_inventory_text.get_width()/2, inventory_Rect.y + 10))
-
+    index_counter = 0
+    
     pygame.display.update()
+    clock.tick(fps)
