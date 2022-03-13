@@ -18,6 +18,7 @@ drop_list = []
 inventory_state = False
 index_counter = 1
 main_counter = 0
+spawn_cycle = 1
 hunger_reduction = 0.01
 clock = pygame.time.Clock()
 
@@ -167,15 +168,13 @@ def get_distance(x2, y2, x1, y1):
     c = (a**2 + b**2)**0.5
     return c
 
-#Creating player, rock and tree objects
+#Creating player object
 player = Player(width/2, height/2)
-for i in range(25):
-        rock = Rock()
-        tree = Tree()
-        rock_list.append(rock)
-        tree_list.append(tree)
 
-#Main loop
+
+"""
+MAIN LOOP
+"""
 running = True
 while running:
 
@@ -188,6 +187,9 @@ while running:
 
     #Filling window with black color
     win.fill((200, 200, 200))
+
+    #Drawing background
+    win.blit(bg_img, (bg_x, bg_y))
     
     #Detecting keys pressed
     keys = pygame.key.get_pressed()
@@ -205,25 +207,27 @@ while running:
         if keys[pygame.K_s] and player.y + player.h < bg_y + bg_img.get_height():
             bg_y -= player_vel
             player.hunger -= hunger_reduction
-
         #Increasing speed of player if ctrl is pressed
-        if keys[pygame.K_LCTRL]:
+        if keys[pygame.K_LCTRL] and player.hunger > 0:
             player_vel = 6
             hunger_reduction = 0.02
-        else:
+        elif player.hunger > 0:
             player_vel = 3
             hunger_reduction = 0.01
 
+    #Reducing player's speed if hunger is 0
+    if player.hunger <= 0:
+        player_vel = 1
+
     #Things to be done per second
     if main_counter % fps == 0:
-        player.hunger -= 0.001 #Increasing hunger
+        player.hunger -= 0.001 #Decreasing hunger
         if player.hunger <= 0:
             player.hunger = 0
-            player.health -= 0.1 #Decreasing health
-            player_vel = 1
-            if player.health <= 0:
-                player.health = 0
-                running = False #Quitting the game if health is 0
+            player.health -= 1 #Decreasing health if hunger is 0
+        if player.health <= 0:
+            player.health = 0
+            running = False #Quitting the game if health is 0
 
     #Keys for showing inventory
     if keys[pygame.K_e]:
@@ -236,8 +240,12 @@ while running:
         if all_items_dict[item] > 0:
             inventory_dict[item] = all_items_dict[item]
 
-    #Drawing background
-    win.blit(bg_img, (bg_x, bg_y))
+    #Creating rock and tree objects
+    while len(rock_list) != 25 and len(tree_list) != 25 and spawn_cycle == 1:
+        rock = Rock()
+        tree = Tree()
+        rock_list.append(rock)
+        tree_list.append(tree)
 
     #Getting postion of mouse
     mouse_pos = pygame.mouse.get_pos()
@@ -245,7 +253,7 @@ while running:
     #Handling rocks
     for rock in rock_list:
         #Drawing rocks
-        rock.draw() 
+        rock.draw()
         #Reducing rock's strength if player is near it and mouse is clicked on rock
         if event.type == pygame.MOUSEBUTTONDOWN:
             if mouse_pos[0] > rock.Rect.x and mouse_pos[0] < rock.Rect.x + rock.Rect.w and mouse_pos[1] > rock.Rect.y and mouse_pos[1] < rock.Rect.y + rock.Rect.h:
@@ -306,6 +314,8 @@ while running:
                 index_counter += 1
 
     index_counter = 0
+
+    spawn_cycle = random.randint(0, 60 * 10)
     
     pygame.display.update()
     clock.tick(fps)
