@@ -1,3 +1,4 @@
+from tkinter import W
 import pygame
 import os
 import random
@@ -23,7 +24,7 @@ hunger_reduction = 0.01
 clock = pygame.time.Clock()
 
 #Fonts
-inventory_font = pygame.font.SysFont("calibri", 25)
+inventory_font = pygame.font.SysFont("calibri", 11)
 stats_font = pygame.font.SysFont("calibri", 15)
 
 #Window
@@ -303,19 +304,22 @@ while running:
         inventoryRect = pygame.Rect(100, 100, width - inventory_img.get_width()/2, height - inventory_img.get_height()/2)
         win.blit(inventory_img, (inventoryRect.x, inventoryRect.y))
         
-        #Drawing items on inventory menu
+        #Handling items on inventory menu
         for item in inventory_dict:
             if item == "wood":
                 item_img = inventory_wood_img
             elif item == "rock":
                 item_img = inventory_rock_img
-            inventory_img.blit(item_img, (inventoryRect.x + 252.5, inventoryRect.y + 3 + (index_counter * 55)))
+            item_text = inventory_font.render(str(inventory_dict[str(item)]), 1, (255, 255, 255)) #Text of number of items
+            item_x, item_y = inventoryRect.x + 252.5, inventoryRect.y + 3 + (index_counter * 55)
+            inventory_img.blit(item_img, (item_x, item_y)) #Drawing items
+            inventory_img.blit(item_text, (item_x + 30, item_y + 25)) #Drawing text of number of items
             if index_counter < len(inventory_dict):
-                index_counter += 1
+                index_counter += 1 
 
     index_counter = 0
 
-    spawn_cycle = random.randint(0, 60 * 10)
+    spawn_cycle = random.randint(0, fps * 10) #If spawn_cycle == 1(probability = once in 10 seconds) and trees and rocks are < 25, new tree and rock objects will be created
     
     pygame.display.update()
     clock.tick(fps)
