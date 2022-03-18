@@ -12,7 +12,7 @@ bg_x, bg_y = -500, -500
 fps = 60
 rock_w, rock_h = 50, 50
 tree_w, tree_h = 75, 120
-rock_list, tree_list = [], []
+rock_list, tree_list, zombie_list = [], [], []
 all_items_dict = {"rock": 0, "wood": 0, "food": 0}
 inventory_dict = {}
 drop_list = []
@@ -22,6 +22,7 @@ main_counter = 0
 spawn_cycle = 1
 hunger_reduction = 0.01
 clock = pygame.time.Clock()
+o1, o2, o3, o4 = False, False, False, False
 
 #Fonts
 inventory_font = pygame.font.SysFont("calibri", 11)
@@ -33,6 +34,9 @@ pygame.display.set_caption("Indie Game")
 
 #Player image
 player_img = pygame.transform.scale(pygame.image.load(os.path.join("assets", "player_img.png")) , (25 * 1.5, 136/4 * 1.5))
+
+#Zombie image
+zombie_img = pygame.transform.scale(pygame.image.load(os.path.join("assets", "zombie_img.png")), (161 * 25*1.5/161, 239 * 25*1.5/161))
 
 #Background image
 bg_img = pygame.transform.scale(pygame.image.load(os.path.join("assets", "bg_img.png")), (width + 2*(-bg_x), height + 2*(-bg_y)))
@@ -84,8 +88,22 @@ rock_drop_img.set_colorkey((255, 255, 255))
 
 player_img.set_colorkey((255, 255, 255))
 
+zombie_img.set_colorkey((255, 255, 255))
+
 inventory_wood_img.set_colorkey((255, 255, 255))
 inventory_rock_img.set_colorkey((255, 255, 255))
+
+def handle_collisions(obj1, obj2):
+    offset_x = obj2.x - obj1.x
+    offset_y = obj2.y - obj1.y
+    if obj1.mask.overlap(obj2.mask, (offset_x, offset_y)):
+        return True  
+
+def get_distance(x2, y2, x1, y1):
+    a = x2 - x1
+    b = y2 - y1
+    c = (a**2 + b**2)**0.5
+    return c
 
 #Player object
 class Player:
@@ -110,6 +128,29 @@ class Player:
         pygame.draw.rect(win, (255, 255, 0), self.hungerRect_2) #Drawing hunger bar
         pygame.draw.rect(win, (255, 0, 0), self.healthRect_1)
         pygame.draw.rect(win, (0, 255, 0), self.healthRect_2) #Drawing health bar
+
+#Zombie object
+class Zombie:
+    def __init__(self):
+        self.x = random.randrange(1, bg_img.get_width() - 50)
+        self.y = random.randrange(1, bg_img.get_height() - 50)
+        self.img = zombie_img
+        self.w = self.img.get_width()
+        self.h = self.img.get_height()
+        self.mask = pygame.mask.from_surface(self.img)
+        self.health = 100
+    def draw(self):
+        self.Rect = pygame.Rect(self.x + bg_x, self.y + bg_y, self.w, self.h)
+        win.blit(self.img, (self.Rect.x, self.Rect.y)) #Drawing zombie
+    def move(self, player):
+        if self.Rect.x < player.x:
+            self.x += 1
+        if self.Rect.y < player.y:
+            self.y += 1
+        if self.Rect.x > player.x:
+            self.x -= 1
+        if self.Rect.y > player.y:
+            self.y -= 1
 
 #Rock object
 class Rock:
@@ -157,21 +198,8 @@ class Drop:
     def draw(self):
         win.blit(self.img, (bg_x + self.x, bg_y + self.y))
 
-def handle_collisions(obj1, obj2):
-    offset_x = obj2.x - obj1.x
-    offset_y = obj2.y - obj1.y
-    if obj1.mask.overlap(obj2.mask, (offset_x, offset_y)):
-        return True  
-
-def get_distance(x2, y2, x1, y1):
-    a = x2 - x1
-    b = y2 - y1
-    c = (a**2 + b**2)**0.5
-    return c
-
 #Creating player object
 player = Player(width/2, height/2)
-
 
 """
 MAIN LOOP
@@ -196,16 +224,16 @@ while running:
     keys = pygame.key.get_pressed()
     if inventory_state == False:
         #Basic movements
-        if keys[pygame.K_a] and player.x > bg_x:
+        if keys[pygame.K_a] and player.x > bg_x and o1 == False:
             bg_x += player_vel
             player.hunger -= hunger_reduction
-        if keys[pygame.K_d] and player.x + player.h < bg_x + bg_img.get_width():
+        if keys[pygame.K_d] and player.x + player.h < bg_x + bg_img.get_width() and o2 == False:
             bg_x -= player_vel
             player.hunger -= hunger_reduction
-        if keys[pygame.K_w] and player.y > bg_y:
+        if keys[pygame.K_w] and player.y > bg_y and o3 == False:
             bg_y += player_vel
             player.hunger -= hunger_reduction
-        if keys[pygame.K_s] and player.y + player.h < bg_y + bg_img.get_height():
+        if keys[pygame.K_s] and player.y + player.h < bg_y + bg_img.get_height() and o4 == False:
             bg_y -= player_vel
             player.hunger -= hunger_reduction
         #Increasing speed of player if ctrl is pressed
@@ -241,15 +269,39 @@ while running:
         if all_items_dict[item] > 0:
             inventory_dict[item] = all_items_dict[item]
 
-    #Creating rock and tree objects
-    while len(rock_list) != 25 and len(tree_list) != 25 and spawn_cycle == 1:
+    #Creating zombie, rock and tree objects
+    while len(rock_list) != 25 and spawn_cycle == 1:
         rock = Rock()
-        tree = Tree()
         rock_list.append(rock)
+    while len(tree_list) != 25 and spawn_cycle == 1:
+        tree = Tree()
         tree_list.append(tree)
+    while len(zombie_list) != 10 and spawn_cycle == 1:
+        zombie = Zombie()
+        zombie_list.append(zombie)
 
     #Getting postion of mouse
     mouse_pos = pygame.mouse.get_pos()
+
+    #Resetting obstacle states
+    o1, o2, o3, o4 = False, False, False, False
+
+    #Handling zombies
+    for zombie in zombie_list:
+        #Drawing zombie
+        zombie.draw()
+        #Moving zombie if its disyance from player is smaller than 200
+        if get_distance(player.x, player.y, zombie.Rect.x, zombie.Rect.y) < width/2:
+            zombie.move(player)
+        #Reducing player's health if zombie is touching player per second
+        if get_distance(player.x, player.y, zombie.Rect.x, zombie.Rect.y) < 50 and main_counter % fps == 0:
+            player.health -= random.randrange(1, 10)
+        #Reducing zombie's health if mouse is clicked on zombie
+        if zombie.Rect.collidepoint(mouse_pos) and get_distance(player.x, player.y, zombie.Rect.x, zombie.Rect.y) < 70 and main_counter % fps == 0:
+            zombie.health -= random.randrange(30, 50)
+        #Removing zombie if its health is 0
+        if zombie.health <= 0:
+            zombie_list.remove(zombie)
 
     #Handling rocks
     for rock in rock_list:
@@ -315,7 +367,7 @@ while running:
             inventory_img.blit(item_img, (item_x, item_y)) #Drawing items
             inventory_img.blit(item_text, (item_x + 30, item_y + 25)) #Drawing text of number of items
             if index_counter < len(inventory_dict):
-                index_counter += 1 
+                index_counter += 1
 
     index_counter = 0
 
