@@ -1,6 +1,6 @@
 reversed_list = []
 odd_pos_list = []
-c1, c2, c3, c4, c5 = True, True, True, True, True
+c1, c2, c2, c_main, c3 = True, True, True, True, True
 t1_list, t2_list, t3_list, t4_list = [], [], [], []
 t1, t2, t3, t4 = None, None, None, None
 var = 0
@@ -62,24 +62,24 @@ for num in range(1000, 9999):
         #Checking for condition 3
         for i in broken_list:
             if i == 0:
-                c3 = False
+                c2 = False
 
         #Checking for condition 4
         for i in range(len(broken_list)):
             if i % 2 == 0:
                 var += broken_list[i]
         if var != len(broken_list):
-            c4 = False
+            c_main = False
 
         #Checking for condition 5
         var = 0
         for i in range(0, len(broken_list), 2):
             var += broken_list[i] * broken_list[i+1]
         if var != sum(broken_list):
-            c5 = False
+            c3 = False
 
         #Printing if all conditions are true
-        if c1 == True and c2 == True and c3 == True and c4 == True and c5 == True:
+        if c1 == True and c2 == True and c2 == True and c_main == True and c3 == True:
             print(reversed_list)
 
         if a == 7391:
@@ -92,5 +92,5 @@ for num in range(1000, 9999):
     t2_list.clear()
     t3_list.clear()
     t4_list.clear()
-    c1, c2, c3, c4, c5 = True, True, True, True, True
+    c1, c2, c2, c_main, c3 = True, True, True, True, True
     var = 0
