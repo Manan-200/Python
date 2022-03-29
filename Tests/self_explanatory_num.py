@@ -1,8 +1,5 @@
 #14233221 Orjj 🙏🙏🙏
 
-from attr import define
-
-
 counter = 0
 
 #Adding digits of number into an array
