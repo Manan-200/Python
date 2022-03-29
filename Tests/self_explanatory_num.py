@@ -1,96 +1,80 @@
-reversed_list = []
-odd_pos_list = []
-c1, c2, c2, c_main, c3 = True, True, True, True, True
-t1_list, t2_list, t3_list, t4_list = [], [], [], []
-t1, t2, t3, t4 = None, None, None, None
-var = 0
+#14233221 Orjj 🙏🙏🙏
 
-"""
-condition 1 = checking for redefining at odd postions
-condition 2 = checking if defining is correct 
-condition 3 = checking there is 0 in the broken list
-condition 4 = checking if sum of digits at even places in list is equal to the length of broken list
-condition 5 = checking if sum of digits of broken list is equal to sum of multiplication of adjacent digits
-"""
+from attr import define
 
-print("started")
 
-for num in range(1000, 9999):
-    a = num
+counter = 0
+
+#Adding digits of number into an array
+def break_num(num):
+    arr = []
     while num != 0:
         r = num % 10
-        reversed_list.append(r)
+        arr.append(r)
         num = num // 10
+    arr = arr[::-1]
+    return(arr)
 
-    broken_list = reversed_list[::-1]
+#Function to remove duplicates
+def rem_dup(arr):
+    arr_new = arr
+    for index_1 in range(0, len(arr_new)):
+        for index_2 in range(0, len(arr_new)):
+            if index_1 != index_2 and arr_new[index_1] == arr_new[index_2]:
+                arr_new.pop(index_1)
+    return(arr_new)
 
-    if len(broken_list) % 2 == 0:
+#Checking if in abcd, b == d(redefining)
+def check_redef(arr):
+    for index_1 in range(1, len(arr), 2):
+        for index_2 in range(1, len(arr), 2):
+            if index_1 != index_2 and arr[index_1] == arr[index_2]:
+                return(False)
 
-        #Checking for condition 1
-        for i in range(len(broken_list)):
-            if i % 2 == 0:  #Needs to be i % 2 == 0 and not i % 2 != 0 due to unkown error
-                odd_pos_list.append(broken_list[i])
-                for j in range(len(odd_pos_list)):
-                    for k in range(len(odd_pos_list)):
-                        if j != k:
-                            if odd_pos_list[j] == odd_pos_list[k]: 
-                                c1 = False
+#Checking if each definer is defined
+def check_def(arr):
+    defineds = []
+    for index_1 in range(1, len(arr), 2):
+        defineds.append(arr[index_1])
+    for index_2 in range(0, len(arr), 2):
+        if arr[index_2] not in defineds:
+            return(False)
 
-        #Checking for condition 2
-        t1 = broken_list[0]
+"""
+The most important filter
+"""
+def main_filter(arr):
+    for index_1 in range(0, len(arr), 2):
+        def_list = []
+        num = arr[index_1 + 1]
+        for index_2 in range(len(arr)):
+            if arr[index_2] == num:
+                def_list.append(num)
+        if arr[index_1] != len(def_list):
+            return(False)
 
-        if broken_list[0] != broken_list[1]:
-            t2 = broken_list[1]
-        if broken_list[0] != broken_list[2] and broken_list[1] != broken_list[2]:
-            t3 = broken_list[2] 
-        if broken_list[0] != broken_list[3] and broken_list[1] != broken_list[3] and broken_list[2] != broken_list[3]:
-            t4 = broken_list[3]
 
-        for i in broken_list:
-            if i == t1:
-                t1_list.append(t1)
-            if i == t2:
-                t2_list.append(t2)
-            if i == t3:
-                t3_list.append(t3)
-            if i == t4:
-                t4_list.append(t4)
+print("Self Explanatory Numbers are:")
 
-        if t1 != len(t2_list):
-            c2 = False
+for num in range(10, 14233223):
 
-        #Checking for condition 3
-        for i in broken_list:
-            if i == 0:
-                c2 = False
+    #Defining conditions
+    c1, c2, c3, c_main = True, True, True, True
 
-        #Checking for condition 4
-        for i in range(len(broken_list)):
-            if i % 2 == 0:
-                var += broken_list[i]
-        if var != len(broken_list):
-            c_main = False
+    broken_list = break_num(num)
+    length = len(broken_list)
 
-        #Checking for condition 5
-        var = 0
-        for i in range(0, len(broken_list), 2):
-            var += broken_list[i] * broken_list[i+1]
-        if var != sum(broken_list):
-            c3 = False
-
-        #Printing if all conditions are true
-        if c1 == True and c2 == True and c2 == True and c_main == True and c3 == True:
-            print(reversed_list)
-
-        if a == 7391:
-            b = 100
-
-    broken_list.clear()
-    reversed_list.clear()
-    odd_pos_list.clear()
-    t1_list.clear()
-    t2_list.clear()
-    t3_list.clear()
-    t4_list.clear()
-    c1, c2, c2, c_main, c3 = True, True, True, True, True
-    var = 0
+    #Checking for condtions
+    if length % 2 != 0:
+        c1 = False
+    if check_redef(broken_list) == False:
+        c2 = False
+    if check_def(broken_list) == False:
+        c3 = False
+    if c1 == True and main_filter(broken_list) == False:
+        c_main = False
+    
+    #Printing number if all conditions are true
+    if c1 == True and c2 == True and c3 == True and c_main == True:
+        counter += 1
+        print(num, "counter = ", counter)
