@@ -1,5 +1,6 @@
 import pygame
 import random
+import math 
 
 pygame.font.init()
 
@@ -125,6 +126,11 @@ while running:
         force = G * star.mass * planet.mass / (R ** 2)
         accl_x = force / planet_mass
         accl_y = force / planet_mass
+        distance_x = star.x - planet.x
+        distance_y = star.y - planet.y
+        theta = math.atan2(distance_y, distance_x)
+        force_x = math.cos(theta) * force
+        force_y = math.sin(theta) * force
 
         #Removing planet if it goes too far
         if accl_x < 0.01 and accl_y < 0.01:
