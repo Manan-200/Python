@@ -1,9 +1,10 @@
 #a = bq + r
-note_type = [1, 2, 5, 10, 20, 50, 100]
+note_type = [1, 2, 5, 10, 20, 50, 100] #List of all valid note types
 
-val = int(input("Enter the value of the currency: "))
+val = int(input("Enter the value of the currency: ")) #Input
 
 def divide(rem):
+    #Base case of recursion
     if rem == 0:
         return(f"0 * 0")
     else:
