@@ -7,7 +7,7 @@ def divide(rem):
     #Base case of recursion
     if rem == 0:
         return(f"0 * 0")
-    else:
+    elif rem > 0:
         num = note_type[-1]
         for i in range(len(note_type)):
             if i != len(note_type) - 1:
@@ -20,5 +20,4 @@ def divide(rem):
         print(f"{num} * {quot} +")
         print(divide(new_rem))
 
-if divide(val) != None:
-    print(divide(val))
+divide(val)
