@@ -36,10 +36,10 @@ class Node:
         pygame.draw.rect(win, (0, 0, 255), (self.x - 5, self.y - 5, 10, 10))
 
 #Creating nodes
-for i in range (5):
-    node = Node(i+1)
+for i in range(7):
+    node = Node(i)
     nodes.append(node)
-node_0 = Node(0) #Initial node
+
 
 #Making all combination of numbers - 1 to 5
 for a in range (1,6):
@@ -48,7 +48,7 @@ for a in range (1,6):
             for d in range (1,6):
                 for e in range (1,6):
                     if a + b + c + d + e == 15 and a*b*c*d*e == 120:
-                        comb_arr.append([a, b, c, d, e])
+                        comb_arr.append([0 ,a, b, c, d, e, 6])
 
 
 def get_distance(node_1, node_2):
