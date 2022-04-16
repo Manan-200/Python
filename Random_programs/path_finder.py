@@ -10,6 +10,7 @@ height, width = 600, 800
 dist = 0
 fps = 45
 main_counter, index_counter= 0, 0
+check = False
 
 #Clock
 clock = pygame.time.Clock()
@@ -147,24 +148,25 @@ while running:
     pygame.display.update()
 
 #Checking if the shortest path is correct
-if (int(input("Check? (1/0)")) == 1):
+if check == True: 
+    if (int(input("Check? (1/0)")) == 1):
 
-    test_dist = 0
-    test_nodes = []
-    id_list = []
+        test_dist = 0
+        test_nodes = []
+        id_list = []
 
-    for i in range(len(nodes)):
-        id = int(input(f"Enter node id: "))
-        id_list.append(id)
-
-    for id in id_list:
         for i in range(len(nodes)):
-            if nodes[i].id == id:
-                test_nodes.append(nodes[i])
+            id = int(input(f"Enter node id: "))
+            id_list.append(id)
 
-    for i in range(len(test_nodes) - 1):
-        test_dist += get_distance(test_nodes[i], test_nodes[i + 1])
+        for id in id_list:
+            for i in range(len(nodes)):
+                if nodes[i].id == id:
+                    test_nodes.append(nodes[i])
 
-    print(test_dist, min_dist)
-    print(len(dist_list), len(node_arr))
-    print("\n\n\n", dist_list)
+        for i in range(len(test_nodes) - 1):
+            test_dist += get_distance(test_nodes[i], test_nodes[i + 1])
+
+        print(test_dist, min_dist)
+        print(len(dist_list), len(node_arr))
+        print("\n\n\n", dist_list)
