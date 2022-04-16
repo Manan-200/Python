@@ -61,6 +61,20 @@ comb_arr = comb_gen()
 #Creating nodes
 nodes = create_nodes(7)
 
+#Arranging Nodes in node_arr based on number combinations 
+def arrange_nodes(comb_arr):
+    node_arr = []
+    for id_arr in comb_arr:
+        new_arr = []
+        for id in id_arr:
+            for node in nodes:
+                if node.id == id:
+                    new_arr.append(node)
+        node_arr.append(new_arr)
+    return(node_arr)
+#Creating combinations
+node_arr = arrange_nodes(comb_arr)
+
 def get_distance(node_1, node_2):
     distance = ((node_1.x - node_2.x)**2 + (node_1.y - node_2.y)**2) ** (1/2)
     return(distance)
@@ -74,15 +88,6 @@ def get_smallest(arr):
                     min_val = arr[i]
                     min_index = i
         return([min_index, min_val])
-
-#Arranging Nodes in node_arr based on number combinations 
-for id_arr in comb_arr:
-    new_arr = []
-    for id in id_arr:
-        for node in nodes:
-            if node.id == id:
-                new_arr.append(node)
-    node_arr.append(new_arr)
 
 while running:
 
@@ -101,14 +106,7 @@ while running:
 
                 nodes = create_nodes(7)
                 comb_arr = comb_gen()
-
-                for id_arr in comb_arr:
-                    new_arr = []
-                    for id in id_arr:
-                        for node in nodes:
-                            if node.id == id:
-                                new_arr.append(node)
-                    node_arr.append(new_arr)
+                node_arr = arrange_nodes(comb_arr)
 
     win.fill((0, 0, 0))
 
