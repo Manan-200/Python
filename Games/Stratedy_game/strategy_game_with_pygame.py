@@ -11,6 +11,7 @@ fps = 100
 counter = 0
 clock = pygame.time.Clock()
 key_cooldown = 0
+bots = []
 
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("strategy game")
@@ -19,7 +20,8 @@ class Player:
     bluebar_y_val = 300
     territory_flag = False
 
-    def __init__(self):
+    def __init__(self, ID):
+        self.id = ID
         self.army = 0
         self.territory = 1000
         self.interest = None           
@@ -29,7 +31,7 @@ class Player:
         self.army += round(self.interest)
 
     def draw(self):
-        self.player_stats = player_font.render(f"Army : {self.army} Territory  : {self.territory} Interest : {self.interest} Time survived : {round(time_survived)}", 1, (255, 255, 255))
+        self.player_stats = player_font.render(f"Your stats :- Army : {self.army}; Territory  : {self.territory}; Interest : {self.interest}; Time survived : {round(time_survived)}", 1, (255, 255, 255))
         win.blit(self.player_stats, (width/2 - self.player_stats.get_width()/2, height/2 - self.player_stats.get_height()/2))
 
     def expand(self, percent):
@@ -54,12 +56,14 @@ class Player:
 
 class Bot(Player):
     def draw(self):
-        self.bot_stats = bot_font.render(f"Army : {self.army} Territory  : {self.territory} Interest : {self.interest} Time survived : {round(time_survived)}", 1, (255, 255, 255))
-        win.blit(self.bot_stats, (width/2 - self.bot_stats.get_width()/2, height/2 + player.player_stats.get_height()/2))
+        self.bot_stats = bot_font.render(f"Bot {self.id}'s stats :- Army : {self.army}; Territory  : {self.territory}; Interest : {self.interest}; Time survived : {round(time_survived)}", 1, (255, 255, 255))
+        win.blit(self.bot_stats, (width/2 - self.bot_stats.get_width()/2, height/2 + player.player_stats.get_height()/2 + self.id*50))
 
             
-player = Player()
-bot_1 = Bot()
+player = Player(0)
+for i in range(1, 6):
+    bot = Bot(i)
+    bots.append(bot)
 
 while True:
 
@@ -76,16 +80,17 @@ while True:
     if keys[pygame.K_e] and key_cooldown <= var:
         key_cooldown += 1
         player.expand(50)
-        bot_1.expand(50)
 
     if var % 1 == 0:  #is similar to time.delay(1) so that the whole program doesn't have to wait 1 second 
         time_survived += 1
         player.handle_interest()
-        bot_1.handle_interest()
+        for bot in bots:
+            bot.handle_interest()
 
     win.fill((0, 0, 0))
     player.draw()
-    bot_1.draw()
+    for bot in bots:
+        bot.draw()
     #player.draw_percent_bar()
 
     pygame.display.update()
