@@ -1,6 +1,6 @@
 import requests
 
-API_KEY = "3832d985453f25b26f167f5d878b6ad4"
+API_KEY = "None"
 BASE_URL = "http://api.openweathermap.org/data/2.5/weather"
 
 city = input("Enter a city name: ")
