@@ -1,55 +1,41 @@
+from copy import copy
 from tkinter import *
+import clipboard
+from pyparsing import col
 
-cip_win = Tk()
-cip_win.title("Cipherer")
-cip_win.configure(bg="Black")
+win = Tk()
+win.title("Cipherer/Decipherer")
+win.configure(bg="Black")
 
-decip_win = Tk()
-decip_win.title("Decipherer")
-decip_win.configure(bg="Black")
-
-def cipher(msg, ans_box):
-    msg_arr = []
+def cipher_decipher():
+    msg = msg_entry.get()
     new_msg = ""
-    #print(msg)
-
-    for letter in msg:
-        if ord(letter) <= ord("z") and ord(letter) >= ord("a"):
-            new_letter = ord("z") - (ord(letter) - ord("a"))
-            msg_arr.append(new_letter)
-
-    for letter in msg_arr:
-        new_msg += letter
-
-    ans_box.insert(END, "new_msg")
+    ans_box.delete("1.0", "end")
     
+    for letter in msg:
+        ciphered_letter = letter
+        if ord(letter) >= ord("a") and ord(letter) <= ord("z"):
+            ciphered_letter = chr(ord("z") - (ord(letter) - ord("a")))
+        new_msg += ciphered_letter
 
-#CIPHERER
-#Labels
-Label(cip_win, text="Enter message to cipher: ", bg="Black", fg="White").grid(row=0, column=0)
-Label(cip_win, text="Ciphered message is: ", bg="Black", fg="White").grid(row=1, column=0)
-#Text box
-cip_ans_box = Text(cip_win, width=15, height=1)
-cip_ans_box.grid(row=1, column=1)
-#Entry box
-cip_msg_entry = Entry(cip_win)
-cip_msg_entry.grid(row=0, column=1)
-#Cipher button
-cip_button = Button(cip_win, text="Cipher", command = cipher(cip_msg_entry.get(), cip_ans_box), bg="Black", fg="White")
-cip_button.grid(row=2, column=0)
+    ans_box.insert(END, new_msg)
 
-#DECIPHERER
+def copy_out():
+    clipboard.copy(ans_box.get("1.0", "end"))
+
 #Labels
-Label(decip_win, text="Enter text to decipher: ", bg="Black", fg="White").grid(row=0, column=0)
-Label(decip_win, text="Deciphered message is: ", bg="Black", fg="White").grid(row=1, column=0)
+Label(win, text="Enter message to cipher/decipher: ", bg="Black", fg="White").grid(row=0, column=0)
+Label(win, text="Ciphered/Deciphered message is: ", bg="Black", fg="White").grid(row=1, column=0)
 #Text box
-decip_ans_box = Text(decip_win, width=15, height=1)
-decip_ans_box.grid(row=1, column=1)
+ans_box = Text(win, width=20, height=1, font = ("Segoe UI", 9))
+ans_box.grid(row=1, column=1)
 #Entry box
-decip_msg_entry = Entry(decip_win)
-decip_msg_entry.grid(row=0, column=1)
-#Decipher button
-decip_button = Button(decip_win, text="Decipher", command = None, bg="Black", fg="White")
-decip_button.grid(row=2, column=0)
+msg_entry = Entry(win)
+msg_entry.grid(row=0, column=1)
+#Button
+button = Button(win, text="Cipher/Decipher", command = cipher_decipher, bg="Black", fg="White")
+button.grid(row=2, column=0)
+copy_button = Button(win, text="Copy output", command = copy_out, bg="Black", fg="White")
+copy_button.grid(row=2, column=1)
 
 mainloop()
