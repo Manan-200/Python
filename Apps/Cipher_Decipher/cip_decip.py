@@ -1,7 +1,6 @@
 from copy import copy
 from tkinter import *
 import clipboard
-from pyparsing import col
 
 win = Tk()
 win.title("Cipherer/Decipherer")
