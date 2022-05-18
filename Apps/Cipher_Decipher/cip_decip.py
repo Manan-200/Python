@@ -1,4 +1,3 @@
-from copy import copy
 from tkinter import *
 import clipboard
 
