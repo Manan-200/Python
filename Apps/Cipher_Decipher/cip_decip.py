@@ -1,7 +1,7 @@
 from tkinter import *
 import clipboard
 
-bg_color = "Black"
+bg_color = "#191919"
 
 win = Tk()
 win.title("Cipherer/Decipherer")
