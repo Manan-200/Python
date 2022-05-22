@@ -11,6 +11,7 @@ dist = 0
 fps = 45
 main_counter, index_counter= 0, 0
 check = False
+drag = False
 
 #Clock
 clock = pygame.time.Clock()
@@ -26,6 +27,7 @@ id_font = pygame.font.SysFont("comicsans", 10)
 #Node class
 class Node:
     def __init__(self, id):
+        self.selected = False
         self.id = id
         if self.id == 0:
             self.x = 50
@@ -100,14 +102,18 @@ while running:
         #Resetting everything if space is pressed
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-
                 dist_list, node_arr = [], []
                 main_counter, index_counter= 0, 0 
                 dist = 0
-
                 nodes = create_nodes(7)
                 comb_arr = comb_gen()
                 node_arr = arrange_nodes(comb_arr)
+        #Setting drag = True if mouse is pressed
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            drag = True
+        #Setting drag = False if mouse is released
+        if event.type == pygame.MOUSEBUTTONUP:
+            drag = False
 
     win.fill((0, 0, 0))
 
@@ -139,11 +145,18 @@ while running:
         dist_text = dist_font.render((f"distance: {round(min_dist)} pixels"), 1, (255, 255, 255))
         win.blit(dist_text, (0, 0))
 
-    #Drawing nodes, blitting distance and id
     for node in nodes:
+        #Drawing nodes, blitting distance and id
         id_text = id_font.render(str(node.id), 1, (255, 0, 0))
         node.draw()
         win.blit(id_text, (node.x - (id_text.get_width()/2), node.y - (id_text.get_height()/2) - 12))
+
+        #Changing position of node if it's dragged with mouse
+        mouse_pos = pygame.mouse.get_pos()
+        if drag == True and ((mouse_pos[0] - node.x)**2 + (mouse_pos[1] - node.y)**2 <= 25**2):
+            node.x, node.y = mouse_pos[0], mouse_pos[1]
+            index_counter = 0
+            dist_list = []
 
     pygame.display.update()
 
