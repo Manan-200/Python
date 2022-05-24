@@ -1,7 +1,6 @@
 num = 6
 NUM = num
-counter = 0
-
+comb_arr = []
 def init_num(n):
     if n == 0:
         return(0)
@@ -41,5 +40,5 @@ for n in range(i_num, f_num + 1):
     num_arr = break_num(n)
 
     if mult_num(break_num(f_num)) == mult_num(num_arr) and sum_num(break_num(f_num)) == sum_num(num_arr) and len(num_arr) == num:
-        counter += 1
-        print(num_arr, counter)
+        comb_arr.append(num_arr)
+print(comb_arr)
