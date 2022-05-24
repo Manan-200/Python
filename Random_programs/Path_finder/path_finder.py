@@ -1,17 +1,18 @@
+from combination_gen import comb_arr, NUM
 import pygame
 import random
 
 pygame.font.init()
 
 #Variables
-nodes, comb_arr, node_arr, dist_list = [], [], [], []
+nodes, node_arr, dist_list = [], [], []
 running = True
 height, width = 600, 800
 dist = 0
-fps = 45
+fps = 120
 main_counter, index_counter= 0, 0
 check = False
-drag = False
+clicked = False
 
 #Clock
 clock = pygame.time.Clock()
@@ -27,20 +28,16 @@ id_font = pygame.font.SysFont("comicsans", 10)
 #Node class
 class Node:
     def __init__(self, id):
-        self.selected = False
         self.id = id
-        if self.id == 0:
-            self.x = 50
-            self.y = 50
-        elif self.id == 6:
-            self.x = width - 50
-            self.y = height - 50
-        else:
-            self.x = random.randint(60, width - 60)
-            self.y = random.randint(60, height - 60)
+        self.x = random.randint(60, width - 60)
+        self.y = random.randint(60, height - 60)
+        self.color = (0, 0, 255)
+        if self.id == 0 or self.id == NUM + 1:
+            self.color = (255, 0, 0)
     def draw(self):
-        pygame.draw.rect(win, (0, 0, 255), (self.x - 5, self.y - 5, 10, 10))
+        pygame.draw.rect(win, (self.color), (self.x - 5, self.y - 5, 10, 10))
 
+#Function to create nodes
 def create_nodes(n):
     nodes = []
     for i in range(n):
@@ -48,21 +45,8 @@ def create_nodes(n):
         nodes.append(node)
     return(nodes)
 
-def comb_gen():
-    arr = []
-    for a in range (1,6):
-        for b in range (1,6):
-            for c in range (1,6):
-                for d in range (1,6):
-                    for e in range (1,6):
-                        if a + b + c + d + e == 15 and a*b*c*d*e == 120:
-                            arr.append([0, a, b, c, d, e, 6])
-    return(arr)
-
-#Creating combinations
-comb_arr = comb_gen()
 #Creating nodes
-nodes = create_nodes(7)
+nodes = create_nodes(NUM + 2)
 
 #Arranging Nodes in node_arr based on number combinations 
 def arrange_nodes(comb_arr):
@@ -105,15 +89,14 @@ while running:
                 dist_list, node_arr = [], []
                 main_counter, index_counter= 0, 0 
                 dist = 0
-                nodes = create_nodes(7)
-                comb_arr = comb_gen()
+                nodes = create_nodes(NUM + 2)
                 node_arr = arrange_nodes(comb_arr)
-        #Setting drag = True if mouse is pressed
+        #Setting clicked = True if mouse is pressed
         if event.type == pygame.MOUSEBUTTONDOWN:
-            drag = True
-        #Setting drag = False if mouse is released
+            clicked = True
+        #Setting clicked = False if mouse is released
         if event.type == pygame.MOUSEBUTTONUP:
-            drag = False
+            clicked = False
 
     win.fill((0, 0, 0))
 
@@ -146,17 +129,19 @@ while running:
         win.blit(dist_text, (0, 0))
 
     for node in nodes:
+        selected = False
         #Drawing nodes, blitting distance and id
         id_text = id_font.render(str(node.id), 1, (255, 0, 0))
         node.draw()
         win.blit(id_text, (node.x - (id_text.get_width()/2), node.y - (id_text.get_height()/2) - 12))
 
-        #Changing position of node if it's dragged with mouse
+        #Changing position of node if it's clickedged with mouse
         mouse_pos = pygame.mouse.get_pos()
-        if drag == True and ((mouse_pos[0] - node.x)**2 + (mouse_pos[1] - node.y)**2 <= 25**2):
+        if clicked == True and ((mouse_pos[0] - node.x)**2 + (mouse_pos[1] - node.y)**2 <= 25**2):
             node.x, node.y = mouse_pos[0], mouse_pos[1]
             index_counter = 0
             dist_list = []
+            selected = True
 
     pygame.display.update()
 
