@@ -77,12 +77,13 @@ def main(genomes, config):
         ships.append(Ship((i + 1) * 10, h - ship_h - 10))
         g.fitness = 0
         ge.append(g)
-        
+
     score = 0
 
     bg_y = 0
     time_survived = 0
     meteor_list = []
+    meteors_100 = []
 
     running = True
     while running:
@@ -114,9 +115,11 @@ def main(genomes, config):
                 meteor_list.append(meteor)
 
             for meteor in meteor_list:
+
                 meteor.move(meteor_vel)
                 meteor.draw(win)
                 meteor.check_off_screen(meteor_list)
+
                 for ship in ships:
                     if collided(ship, meteor, meteor_list, ships):
                         collision_sound.play()
@@ -124,6 +127,13 @@ def main(genomes, config):
                             ships.remove(ship)
                         if meteor in meteor_list:
                             meteor_list.remove(meteor)
+
+                if abs(ship.y - meteor.y) <= 100 and abs(ship.x - meteor.x) <= 100 and meteor not in meteors_100:
+                    meteors_100.append(meteor)
+                if abs(ship.y - meteor.y) >  100 and abs(ship.x - meteor.x) > 100 and meteor in meteors_100:
+                    meteors_100.remove(meteor)
+
+            
 
             amplifier = 0.2 * time_survived/fps
 
