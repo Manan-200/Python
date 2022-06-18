@@ -1,6 +1,5 @@
 from tkinter import *
 import clipboard
-a = 10
 
 bg_color = "#191919"
 
