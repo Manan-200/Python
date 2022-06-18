@@ -90,7 +90,7 @@ def print_vals():
 
     if counter == 0:
         counter += 1
-        ans_val.insert(f"counter:{counter}     value of x, y, z : NA, NA, NA")
+        ans_val.insert(0, f"counter:{counter}     value of x, y, z : NA, NA, NA")
 
 
 
