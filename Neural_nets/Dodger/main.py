@@ -57,17 +57,18 @@ def main(genomes, config):
                 quit()
 
         #Adding meteors
-        while len(meteors) < 25:
-            meteor = Meteor(random.randint(0, width), random.randint(-1000, 0))
+        while len(meteors) < 150:
+            meteor = Meteor(random.randint(0, width), random.randint(-5000, -1500))
             meteors.append(meteor)
 
         for x, ship in enumerate(ships):
             ship.draw()
+            ge[x].fitness += 0.1
             for meteor in meteors:
-                if abs(ship.x - meteor.x) <= 25:
+                if abs(ship.x - meteor.x) <= 25 and meteor.y > 0:
                     x_meteors.append(meteor)
             for meteor in x_meteors:
-                output = nets[x].activate((ship.x, meteor.x, meteor.y))
+                output = nets[x].activate((ship.x, meteor.x - 25, meteor.x + 25))
                 if output[0] > 0:
                     ship.x -= 3
                 if output[0] < 0:
