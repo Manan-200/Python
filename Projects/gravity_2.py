@@ -8,7 +8,7 @@ fps = 120
 clock = pygame.time.Clock()
 G = 6.67 * 10 ** -11
 planet_list = []
-planets = 1000
+planets = 50
 
 def get_dist(x1, y1, x2, y2):
     a = x1 - x2
