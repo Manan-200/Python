@@ -23,18 +23,8 @@ def sum_comb(n):
         
     return(arr)
 
-
-if __name__ == "__main__":
-    num = int(input("Enter a number: "))
-    sum_arr = sum_comb(num)
-    sum_arr = set(tuple(element) for element in sum_arr)
-    print(f"Sum combinations of {num} are: {len(sum_arr)}")
-    print(sum_arr)
-else:
-    x = []
-    y = []
-    for num in range(2, 16):
-        sum_arr = sum_comb(num)
-        sum_arr = set(tuple(element) for element in sum_arr)
-        x.append(num)
-        y.append(len(sum_arr))
+num = int(input("Enter a number: "))
+sum_arr = sum_comb(num)
+sum_arr = set(tuple(element) for element in sum_arr)
+print(f"Sum combinations of {num} are: {len(sum_arr)}")
+print(sum_arr)
