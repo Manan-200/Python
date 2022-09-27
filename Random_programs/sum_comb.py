@@ -23,8 +23,11 @@ def sum_comb(n):
         
     return(arr)
 
+
 num = int(input("Enter a number: "))
 sum_arr = sum_comb(num)
-sum_arr = set(tuple(element) for element in sum_arr)
-print(f"Sum combinations of {num} are: {len(sum_arr)}")
-print(sum_arr)
+sum_arr = list(set(tuple(element) for element in sum_arr))
+
+if __name__ == "__main__":
+    print(f"Sum combinations of {num} are: {len(sum_arr)}")
+    print(sum_arr)
