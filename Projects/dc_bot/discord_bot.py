@@ -69,8 +69,6 @@ async def on_message(message):
 
                 if cmd == cmds[2]:
                     await message.channel.send("Choose a game to play: ")
-                    data["play"] = "1"
-                    save_data(FILEPATH, data)
                     for game in games:
                         await message.channel.send(game)
         return
