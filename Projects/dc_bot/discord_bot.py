@@ -22,9 +22,6 @@ def load_data(filepath):
     except:
         return {}
 
-# data = load_data(FILEPATH)
-# save_data(FILEPATH, data)
-
 intents = discord.Intents.default()
 intents.message_content = True
 intents.members = True
