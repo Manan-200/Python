@@ -25,7 +25,7 @@ txt_box.grid(row=1, column=0, ipadx=205, sticky="w")
 #Defining send button
 send = Button(window, text="Send", command=send_msg)
 send.grid(row=1, column=0, ipadx=25, sticky="e")
-for i in range(10):
-    insert_msg(f"{user}: {msg}")
+
+insert_msg(f"{user}: {msg}")
 
 mainloop()
