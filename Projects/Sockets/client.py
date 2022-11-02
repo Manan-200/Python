@@ -8,7 +8,6 @@ DISCONNECT_MESSAGE = "!disconnect"
 
 with open("ip_adr.json") as f:
     SERVER = json.load(f)["IP"]
-SERVER = "192.168.94.23"
 ADDR = (SERVER, PORT)
 
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
