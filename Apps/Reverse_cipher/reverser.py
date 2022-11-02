@@ -4,7 +4,7 @@ import clipboard
 bg_color = "#191919"
 
 win = Tk()
-win.title("Cipherer/Decipherer")
+win.title("Reverser")
 win.configure(bg=bg_color)
 
 def cipher_decipher():
