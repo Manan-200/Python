@@ -2,7 +2,7 @@ import socket
 import json
 
 HEADER = 64
-PORT = 5050
+PORT = 5065
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!disconnect"
 
