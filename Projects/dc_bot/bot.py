@@ -26,10 +26,5 @@ async def hello(interaction: discord.Interaction):
 @app_commands.describe(msg = "what should I say?")
 async def  say(interaction: discord.Interaction, msg:str):
     await interaction.response.send_message(f"{msg}")
-
-@bot.tree.command(name="lmao)
-async def lmao(interaction: discord.Interaction):
-    await interaction.response.send_message(f"manan's life is funny yes!)
-                                            
                                             
 bot.run(TOKEN)
