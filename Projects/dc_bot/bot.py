@@ -18,8 +18,8 @@ async def on_ready():
     except Exception as e:
         print (e)
 
-@bot.tree.command(name="hey")
-async def hello(interaction: discord.Interaction):
+@bot.tree.command(name="hey")   
+async def hello(interaction: discord.Interaction):  
     await interaction.response.send_message(f"hey mf")
 
 @bot.tree.command(name="print")
