@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import json
+import random
 
 DATA_FILE = "data.json"
 
@@ -18,9 +19,9 @@ def save_data(FILE, data):
         json.dump(data, file)
 
 TOKEN = get_data("token.json")["token"]
+data_dict = get_data(DATA_FILE)
 
 bot = commands.Bot(command_prefix="!", intents = discord.Intents.all())
-
 
 @bot.event
 async def on_ready():
@@ -35,10 +36,9 @@ async def on_ready():
 async def hello(interaction: discord.Interaction):  
     await interaction.response.send_message(f"hey mf")
 
-@bot.tree.command(name="print")
-@app_commands.describe(msg = "what should I say?")
-async def print_msg(interaction: discord.Interaction, msg:str):
-    await interaction.response.send_message(f"{msg}")
+@bot.tree.command(name="print_data")
+async def print_msg(interaction: discord.Interaction):
+    await interaction.response.send_message(f"{data_dict}")
 
 @bot.tree.command(name="games")
 async def games(interaction: discord.Interaction):
@@ -64,6 +64,13 @@ async def embed(interaction: discord.Interaction, member:discord.Member = None):
 
     await interaction.response.send_message(embed=embed)
 
-
+@bot.tree.command(name="num_guess")
+async def num_guess(interaction: discord.Interaction):
+    await interaction.response.send_message("Random number has been generated between 1 and 50!")
+    num = random.randrange(1, 51)
+    lives = 5
+    data_dict["num"] = num
+    data_dict["lives"] = lives
+    save_data(DATA_FILE, data_dict)
 
 bot.run(TOKEN)
