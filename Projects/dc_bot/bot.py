@@ -3,8 +3,18 @@ from discord import app_commands
 from discord.ext import commands
 import json
 
-with open("token.json", "r") as f:
-    TOKEN = json.load(f)["token"]
+FILE = "data.json"
+
+def get_data(FILE):
+    try:
+        with open(FILE, "r") as file:
+            data = json.load(file)
+        return(data)
+    except:
+        return {}
+
+TOKEN = get_data("token.json")["token"]
+print(get_data(FILE))
 
 bot = commands.Bot(command_prefix="!", intents = discord.Intents.all())
 
@@ -50,5 +60,7 @@ async def embed(interaction: discord.Interaction, member:discord.Member = None):
     embed.set_footer(text=f"{interaction.user} created this embed!")
 
     await interaction.response.send_message(embed=embed)
+
+
 
 bot.run(TOKEN)
