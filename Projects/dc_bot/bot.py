@@ -3,7 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 import json
 
-FILE = "data.json"
+DATA_FILE = "data.json"
 
 def get_data(FILE):
     try:
@@ -13,8 +13,11 @@ def get_data(FILE):
     except:
         return {}
 
+def save_data(FILE, data):
+    with open(FILE, "w") as file:
+        json.dump(data, file)
+
 TOKEN = get_data("token.json")["token"]
-print(get_data(FILE))
 
 bot = commands.Bot(command_prefix="!", intents = discord.Intents.all())
 
@@ -39,7 +42,7 @@ async def print_msg(interaction: discord.Interaction, msg:str):
 
 @bot.tree.command(name="games")
 async def games(interaction: discord.Interaction):
-    await interaction.response.send_message("game1, game2, game3")
+    await interaction.response.send_message("num_guess, game2, game3")
 
 @bot.tree.command(name="ping")
 async def ping(interaction: discord.Interaction):
