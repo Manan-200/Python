@@ -31,4 +31,8 @@ async def print_msg(interaction: discord.Interaction, msg:str):
 async def games(interaction: discord.Interaction):
     await interaction.response.send_message("game1, game2, game3")
 
+@bot.tree.command(name="ping")
+async def ping(interaction: discord.Interaction):
+    await interaction.response.send_message("pong!")
+    
 bot.run(TOKEN)
