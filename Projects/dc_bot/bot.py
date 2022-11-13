@@ -24,7 +24,11 @@ async def hello(interaction: discord.Interaction):
 
 @bot.tree.command(name="print")
 @app_commands.describe(msg = "what should I say?")
-async def  say(interaction: discord.Interaction, msg:str):
+async def print_msg(interaction: discord.Interaction, msg:str):
     await interaction.response.send_message(f"{msg}")
+
+@bot.tree.command(name="games")
+async def games(interaction: discord.Interaction):
+    await interaction.response.send_message("game1, game2, game3")
 
 bot.run(TOKEN)
