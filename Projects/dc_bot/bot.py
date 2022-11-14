@@ -33,23 +33,23 @@ async def on_ready():
         print (e)
 
 @bot.tree.command(name="hey")   
-async def hello(interaction: discord.Interaction):  
+async def hello(interaction):  
     await interaction.response.send_message(f"hey mf")
 
 @bot.tree.command(name="print_data")
-async def print_msg(interaction: discord.Interaction):
+async def print_msg(interaction):
     await interaction.response.send_message(f"{data_dict}")
 
 @bot.tree.command(name="games")
-async def games(interaction: discord.Interaction):
+async def games(interaction):
     await interaction.response.send_message("num_guess, game2, game3")
 
 @bot.tree.command(name="ping")
-async def ping(interaction: discord.Interaction):
+async def ping(interaction):
     await interaction.response.send_message("pong!")
 
 @bot.tree.command(name="embed")
-async def embed(interaction: discord.Interaction, member:discord.Member = None):
+async def embed(interaction, member:discord.Member=None):
     if member == None:
         member = interaction.user
     
@@ -64,8 +64,8 @@ async def embed(interaction: discord.Interaction, member:discord.Member = None):
 
     await interaction.response.send_message(embed=embed)
 
-@bot.tree.command(name="num_guess")
-async def num_guess(interaction: discord.Interaction):
+@bot.tree.command(name="generate_num")
+async def generate_num(interaction):
     await interaction.response.send_message("Random number has been generated between 1 and 50!")
     num = random.randrange(1, 51)
     lives = 5
@@ -73,4 +73,20 @@ async def num_guess(interaction: discord.Interaction):
     data_dict["lives"] = lives
     save_data(DATA_FILE, data_dict)
 
+@bot.tree.command(name="guess")
+async def guess(interaction, num:int):
+    lives = data_dict["lives"]
+    if lives > 0:
+        if data_dict["num"] == num:
+            await interaction.response.send_message("You guessed the correct number")
+        else:
+            if data_dict["num"] < num:
+                await interaction.response.send_message("Your guess is too big")
+            elif data_dict["num"] > num:
+                await interaction.response.send_message("Your guess is too small")
+            data_dict["lives"] -= 1
+            lives -= 1
+    if lives == 0:
+        await interaction.response.send_message("You lost")
+    
 bot.run(TOKEN)
