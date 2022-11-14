@@ -21,7 +21,11 @@ def save_data(FILE, data):
 TOKEN = get_data("token.json")["token"]
 data_dict = get_data(DATA_FILE)
 print(data_dict)
-game1_data = data_dict["game_1"]
+try:
+    game1_data = data_dict["game_1"]
+except:
+    data_dict["game_1"] = {}
+    game1_data = data_dict["game_1"]
 
 bot = commands.Bot(command_prefix="!", intents = discord.Intents.all())
 
