@@ -4,7 +4,7 @@ from discord.ext import commands
 import json
 import random
 
-DATA_FILE = "data.json"
+DATA_FILE = "num_guess.json"
 
 def get_data(FILE):
     try:
@@ -20,6 +20,7 @@ def save_data(FILE, data):
 
 TOKEN = get_data("token.json")["token"]
 data_dict = get_data(DATA_FILE)
+game1_data = data_dict["g1"]
 
 bot = commands.Bot(command_prefix="!", intents = discord.Intents.all())
 
@@ -33,23 +34,23 @@ async def on_ready():
         print (e)
 
 @bot.tree.command(name="hey")   
-async def hello(interaction):  
+async def hello(interaction:discord.Interaction):  
     await interaction.response.send_message(f"hey mf")
 
 @bot.tree.command(name="print_data")
-async def print_msg(interaction):
-    await interaction.response.send_message(f"{data_dict}")
+async def print_msg(interaction:discord.Interaction):
+    await interaction.response.send_message(f"{game1_data}")
 
 @bot.tree.command(name="games")
-async def games(interaction):
+async def games(interaction:discord.Interaction):
     await interaction.response.send_message("num_guess, game2, game3")
 
 @bot.tree.command(name="ping")
-async def ping(interaction):
+async def ping(interaction:discord.Interaction):
     await interaction.response.send_message("pong!")
 
 @bot.tree.command(name="embed")
-async def embed(interaction, member:discord.Member=None):
+async def embed(interaction:discord.Interaction, member:discord.Member=None):
     if member == None:
         member = interaction.user
     
@@ -65,28 +66,30 @@ async def embed(interaction, member:discord.Member=None):
     await interaction.response.send_message(embed=embed)
 
 @bot.tree.command(name="generate_num")
-async def generate_num(interaction):
+async def generate_num(interaction:discord.Interaction):
     await interaction.response.send_message("Random number has been generated between 1 and 50!")
-    num = random.randrange(1, 51)
-    lives = 5
-    data_dict["num"] = num
-    data_dict["lives"] = lives
-    save_data(DATA_FILE, data_dict)
+    game1_data["state"] = True
+    game1_data["num"] = random.randrange(1, 51)
+    game1_data["lives"] = 5
+    save_data(DATA_FILE, game1_data)
 
 @bot.tree.command(name="guess")
-async def guess(interaction, num:int):
-    lives = data_dict["lives"]
-    if lives > 0:
-        if data_dict["num"] == num:
+async def guess(interaction:discord.Interaction, num:int):
+    if game1_data["state"]:
+        if game1_data["num"] == num:
             await interaction.response.send_message("You guessed the correct number")
+            await interaction.response.send_message("gg")
+            game1_data["state"] = False
         else:
-            if data_dict["num"] < num:
+            if game1_data["num"] < num:
                 await interaction.response.send_message("Your guess is too big")
-            elif data_dict["num"] > num:
+            elif game1_data["num"] > num:
                 await interaction.response.send_message("Your guess is too small")
-            data_dict["lives"] -= 1
-            lives -= 1
-    if lives == 0:
-        await interaction.response.send_message("You lost")
+            game1_data["lives"] -= 1
+            if game1_data["lives"] == 0:
+                await interaction.response.send_message("You lost")
+                game1_data["state"] = False
+    else:
+        await interaction.response.send_message("First use /generate_num")
     
 bot.run(TOKEN)
