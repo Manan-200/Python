@@ -4,7 +4,7 @@ from discord.ext import commands
 import json
 import random
 
-DATA_FILE = "num_guess.json"
+DATA_FILE = "data.json"
 
 def get_data(FILE):
     try:
@@ -20,7 +20,8 @@ def save_data(FILE, data):
 
 TOKEN = get_data("token.json")["token"]
 data_dict = get_data(DATA_FILE)
-game1_data = data_dict["g1"]
+print(data_dict)
+game1_data = data_dict["game_1"]
 
 bot = commands.Bot(command_prefix="!", intents = discord.Intents.all())
 
@@ -39,11 +40,7 @@ async def hello(interaction:discord.Interaction):
 
 @bot.tree.command(name="print_data")
 async def print_msg(interaction:discord.Interaction):
-    await interaction.response.send_message(f"{game1_data}")
-
-@bot.tree.command(name="games")
-async def games(interaction:discord.Interaction):
-    await interaction.response.send_message("num_guess, game2, game3")
+    await interaction.response.send_message(f"{data_dict}")
 
 @bot.tree.command(name="ping")
 async def ping(interaction:discord.Interaction):
@@ -71,25 +68,26 @@ async def generate_num(interaction:discord.Interaction):
     game1_data["state"] = True
     game1_data["num"] = random.randrange(1, 51)
     game1_data["lives"] = 5
-    save_data(DATA_FILE, game1_data)
+    save_data(DATA_FILE, data_dict)
 
 @bot.tree.command(name="guess")
 async def guess(interaction:discord.Interaction, num:int):
     if game1_data["state"]:
         if game1_data["num"] == num:
-            await interaction.response.send_message("You guessed the correct number")
-            await interaction.response.send_message("gg")
+            await interaction.response.send_message("You guessed the correct number, gg!")
             game1_data["state"] = False
         else:
-            if game1_data["num"] < num:
-                await interaction.response.send_message("Your guess is too big")
-            elif game1_data["num"] > num:
-                await interaction.response.send_message("Your guess is too small")
             game1_data["lives"] -= 1
+            if game1_data["lives"] > 0:
+                if game1_data["num"] < num:
+                    await interaction.response.send_message("Your guess is too big")
+                elif game1_data["num"] > num:
+                    await interaction.response.send_message("Your guess is too small")
             if game1_data["lives"] == 0:
                 await interaction.response.send_message("You lost")
                 game1_data["state"] = False
     else:
         await interaction.response.send_message("First use /generate_num")
+    save_data(DATA_FILE, data_dict)
     
 bot.run(TOKEN)
