@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands import has_permissions
 import json
 import random
 
@@ -102,5 +103,46 @@ async def guess(interaction:discord.Interaction, num:int):
 @bot.tree.command(name="reverse_cipher")
 async def reverse_cipher(interaction:discord.Interaction, msg:str):
     await interaction.response.send_message(reverse(msg))
+
+@bot.tree.command(name="role")
+async def role(interaction: discord.Interaction, role: discord.Role):
+    if role in interaction.user.roles:
+        await interaction.user.remove_roles(role)
+    else:
+        await interaction.user.add_roles(role)
+    await interaction.response.send_message(f"Work has been done")
+
+@bot.tree.command(name="addrole")
+@has_permissions(manage_roles=True)
+async def addrole(interaction: discord.Interaction, role: discord.Role, member: discord.Member=None):
+    member == member or interaction.user
+    await member.add_roles(role)
+    await interaction.response.send_message (f"{role} has been added to {member}")
+
+@bot.tree.command(name="removerole")
+@has_permissions(manage_roles=True)
+async def removerole(interaction: discord.Interaction, role: discord.Role, member: discord.Member=None):
+    member == member or interaction.user
+    await member.remove_roles(role)
+    await interaction.response.send_message (f"{role} has been removed from {member}!")
+
+@bot.tree.command(name="ban")
+async def ban(interaction:discord.Interaction, member: discord.Member, reason:str=None):
+    await member.ban()
+    try:
+        await member.send(f"You have been banned in {interaction.guild} for {reason}")
+    except:
+        pass
+    await interaction.response.send_message(f"{member} has been successfully banned.")
+
+@bot.tree.command(name="kick")
+async def kick(interaction:discord.Interaction, member: discord.Member, reason:str=None):
+    await member.kick()
+    try:
+        await member.send(f"You have been kicked from {interaction.guild} for {reason}")
+    except:
+        pass
+    await interaction.response.send_message(f"{member} has been successfully kicked.")
+
 
 bot.run(TOKEN)
