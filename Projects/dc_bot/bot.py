@@ -8,8 +8,7 @@ DATA_FILE = "data.json"
 def reverse(msg:str):
     rev_msg = ""
     for char in msg:
-        dist_m = ord(char) - ord("m")
-        rev_msg += chr(ord("n") - dist_m)
+        rev_msg += chr(ord("n") + ord("m") - ord(char))
     return(rev_msg)
 
 def get_data(FILE):
