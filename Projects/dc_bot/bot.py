@@ -144,5 +144,4 @@ async def kick(interaction:discord.Interaction, member: discord.Member, reason:s
         pass
     await interaction.response.send_message(f"{member} has been successfully kicked.")
 
-
 bot.run(TOKEN)
