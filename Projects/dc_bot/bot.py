@@ -1,5 +1,4 @@
 import discord
-from discord import app_commands
 from discord.ext import commands
 import json
 import random
@@ -93,5 +92,5 @@ async def guess(interaction:discord.Interaction, num:int):
     else:
         await interaction.response.send_message("First use /generate_num")
     save_data(DATA_FILE, data_dict)
-    
+
 bot.run(TOKEN)
