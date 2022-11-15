@@ -5,6 +5,13 @@ import random
 
 DATA_FILE = "data.json"
 
+def reverse(msg:str):
+    rev_msg = ""
+    for char in msg:
+        dist_m = ord(char) - ord("m")
+        rev_msg += chr(ord("n") - dist_m)
+    return(rev_msg)
+
 def get_data(FILE):
     try:
         with open(FILE, "r") as file:
@@ -92,5 +99,9 @@ async def guess(interaction:discord.Interaction, num:int):
     else:
         await interaction.response.send_message("First use /generate_num")
     save_data(DATA_FILE, data_dict)
+
+@bot.tree.command(name="reverse_cipher")
+async def reverse_cipher(interaction:discord.Interaction, msg:str):
+    await interaction.response.send_message(reverse(msg))
 
 bot.run(TOKEN)
