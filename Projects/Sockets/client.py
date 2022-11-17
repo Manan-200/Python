@@ -1,7 +1,7 @@
 import socket
 import json
 
-HEADER = 64
+HEADER = 8
 PORT = 5065
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!disconnect"
@@ -14,14 +14,14 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDR)
 
 def send(msg):
-    message = msg.encode(FORMAT)
-    msg_len = len(message)
-    send_len = str(msg_len).encode(FORMAT)
-    send_len += b"" * (HEADER - len(send_len))
-    client.send(send_len)
-    client.send(message)
+    while msg != "":
+        sel_msg = msg[:HEADER]
+        client.send(sel_msg.encode(FORMAT))
+        msg = msg[len(sel_msg):]
+    client.send("MsgBreak".encode(FORMAT))
     print(client.recv(2048).decode(FORMAT))
 
-for i in range(int(input("Enter number of messages: "))):
-    send(input("Enter the message: "))
-send(DISCONNECT_MESSAGE)
+state = True
+while state:
+    msg = input("Enter the msg: ")
+    send(msg)
