@@ -23,12 +23,11 @@ def handle_client(conn, addr):
         if msg == "MsgBreak":
             print(f"[{addr}] {final_msg}")
             conn.send("Msg recieved".encode(FORMAT))
+            if final_msg == DISCONNECT_MESSAGE:
+                connected = False
             final_msg = ""
         else:
             final_msg += msg
-
-        if final_msg == DISCONNECT_MESSAGE:
-            connected = False
 
     conn.close()
 
