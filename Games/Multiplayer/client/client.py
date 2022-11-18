@@ -26,11 +26,14 @@ def load_data(file):
         return {}
 
 def send_file():
-    file = json.dumps(DATA_FILE)
-    client.sendall(bytes(file, encoding="utf-8"))
+    data = load_data(DATA_FILE)
+    client.send(str(data["self"]).encode(FORMAT))
 
 def receive():
-    print(client.recv(2048).decode(FORMAT))
+    data = load_data(DATA_FILE)
+    msg = eval(client.recv(2048).decode(FORMAT))
+    data.update(msg)
+    save_data(DATA_FILE, data)
 
 n = 0
 while True:

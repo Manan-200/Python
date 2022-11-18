@@ -2,6 +2,13 @@ import socket
 import threading
 import json
 
+DATA_FILE = "server_data.json"
+HEADER = 1024
+PORT = 5065
+SERVER = socket.gethostbyname(socket.gethostname())
+ADDR = (SERVER, PORT)
+FORMAT = "utf-8"
+
 def load_data(file):
     try:
         with open(file, 'r') as f:
@@ -13,12 +20,7 @@ def save_data(file, data):
     with open(file, "w") as f:
         json.dump(data, f)
 
-DATA_FILE = "server_data.json"
-HEADER = 1024
-PORT = 5065
-SERVER = socket.gethostbyname(socket.gethostname())
-ADDR = (SERVER, PORT)
-FORMAT = "utf-8"
+save_data(DATA_FILE, {})
 
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server.bind(ADDR)
@@ -28,7 +30,7 @@ def handle_client(conn, addr):
     connected = True
 
     while connected:
-        msg = conn.recv(HEADER).decode(FORMAT)
+        msg = eval(conn.recv(HEADER).decode(FORMAT))
 
         data = load_data(DATA_FILE)
         if f"{addr}" not in data:
@@ -39,8 +41,11 @@ def handle_client(conn, addr):
                 data[f"{addr}"] = msg
                 save_data(DATA_FILE, data)
 
-        #conn.send(json.dumps(DATA_FILE))
-        conn.send("data received".encode(FORMAT))
+        sending_data = {}
+        for key in data:
+            if key != str(addr):
+                sending_data[key] = data[key]
+        conn.send(str(sending_data).encode(FORMAT))
 
     conn.close()
 
