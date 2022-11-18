@@ -2,7 +2,12 @@ import socket
 import threading
 import json
 
-data = {}
+def load_data(file):
+    try:
+        with open(file, 'r') as f:
+            return(json.load(f))
+    except:
+        return {}
 
 def save_data(file, data):
     with open(file, "w") as f:
@@ -24,8 +29,16 @@ def handle_client(conn, addr):
 
     while connected:
         msg = conn.recv(HEADER).decode(FORMAT)
-        data[f"{addr}"] = msg
-        save_data(DATA_FILE, data)
+
+        data = load_data(DATA_FILE)
+        if f"{addr}" not in data:
+            data[f"{addr}"] = msg
+            save_data(DATA_FILE, data)
+        else:
+            if data[f"{addr}"] != msg:
+                data[f"{addr}"] = msg
+                save_data(DATA_FILE, data)
+
         #conn.send(json.dumps(DATA_FILE))
         conn.send("data received".encode(FORMAT))
 

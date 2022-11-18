@@ -32,6 +32,10 @@ def send_file():
 def receive():
     print(client.recv(2048).decode(FORMAT))
 
+n = 0
 while True:
-    send_file()
+    n += 1
+    if n % 1000 == 0:
+        send_file()
     thread = threading.Thread(target=receive)
+    thread.start()
