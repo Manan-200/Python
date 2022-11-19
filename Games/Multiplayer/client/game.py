@@ -1,7 +1,6 @@
 import pygame
-import random
 import json
-import threading
+import random
 
 width, height = 700, 500
 box_vel = 5
@@ -57,9 +56,16 @@ while run:
         box.y -= box_vel
     if keys[pygame.K_s] and box.y + box.h/2 < height:
         box.y += box_vel
-
-    box.draw()
-    thread = threading.Thread(target=save_data, args=(DATA_FILE, {"self": [box.x, box.y]}))
-    thread.start()
     
+    for addr in data:
+        if addr != "self":
+            x = data[addr][0]
+            y = data[addr][1]
+            box2 = Box(x, y)
+            box2.draw()
+            
+    box.draw()
+    data["self"] = [box.x, box.y]
+    save_data(DATA_FILE, data)
+
     pygame.display.update()
