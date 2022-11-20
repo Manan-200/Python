@@ -6,6 +6,7 @@ width, height = 700, 500
 box_vel = 5
 clock = pygame.time.Clock()
 fps = 120
+box_arr = []
 
 DATA_FILE = "client_data.json"
 
@@ -20,8 +21,6 @@ def load_data(file):
             return(json.load(f))
     except:
         return {}
-
-data = load_data(DATA_FILE)
 
 class Box:
     def __init__(self, x=width/2, y=height/2):
@@ -41,9 +40,13 @@ while run:
 
     clock.tick(fps)
 
+    data = load_data(DATA_FILE)
+
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
+            data["state"] = False
+            save_data(DATA_FILE, data)
 
     window.fill((0, 0, 0))
 
@@ -58,7 +61,7 @@ while run:
         box.y += box_vel
     
     for addr in data:
-        if addr != "self":
+        if addr != "self" and addr != "state":
             x = data[addr][0]
             y = data[addr][1]
             box2 = Box(x, y)
