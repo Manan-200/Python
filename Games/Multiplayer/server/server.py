@@ -31,25 +31,21 @@ def handle_client(conn, addr):
     connected = True
 
     while connected:
-        msg = conn.recv(HEADER).decode(FORMAT)
-        if msg == "!":
-            connected = False
+        msg = eval(conn.recv(HEADER).decode(FORMAT))
+        data = load_data(DATA_FILE)
+        if f"{addr}" not in data:
+            data[f"{addr}"] = msg
+            save_data(DATA_FILE, data)
         else:
-            msg = eval(msg)
-            data = load_data(DATA_FILE)
-            if f"{addr}" not in data:
+            if data[f"{addr}"] != msg:
                 data[f"{addr}"] = msg
                 save_data(DATA_FILE, data)
-            else:
-                if data[f"{addr}"] != msg:
-                    data[f"{addr}"] = msg
-                    save_data(DATA_FILE, data)
 
-            sending_data = {}
-            for key in data:
-                if key != str(addr):
-                    sending_data[key] = data[key]
-            conn.send(str(sending_data).encode(FORMAT))
+        sending_data = {}
+        for key in data:
+            if key != str(addr):
+                sending_data[key] = data[key]
+        conn.send(str(sending_data).encode(FORMAT))
     print(f"{addr} left the server")
     conn.close()
 

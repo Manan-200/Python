@@ -21,12 +21,8 @@ def load_data(file):
 
 def send():
     data = load_data(DATA_FILE)
-    if "state" in data and data["state"] == True:
-        if "self" in data:
-            client.send(str(data["self"]).encode(FORMAT))
-    else:
-        client.send("!".encode(FORMAT))
-        sys.exit()
+    if "self" in data:
+        client.send(str(data["self"]).encode(FORMAT))
 
 def receive():
     msg = eval(client.recv(2048).decode(FORMAT))
@@ -42,7 +38,7 @@ ADDR = (SERVER, PORT)
 client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(ADDR)
 
-save_data(DATA_FILE, {"state": True, "self": [0, 0]})
+save_data(DATA_FILE, {"self": [0, 0]})
 
 n = 0
 while True:

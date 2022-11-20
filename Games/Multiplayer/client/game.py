@@ -45,8 +45,6 @@ while run:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
-            data["state"] = False
-            save_data(DATA_FILE, data)
 
     window.fill((0, 0, 0))
 
