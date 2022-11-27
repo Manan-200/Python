@@ -3,7 +3,7 @@ import json
 import threading
 
 HEADER = 8
-PORT = 5065
+PORT = 15456
 FORMAT = "utf-8"
 DISCONNECT_MESSAGE = "!disconnect"
 
