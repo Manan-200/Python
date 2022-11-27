@@ -1,4 +1,3 @@
-Projects/dc_bot/token.json
 Projects/Sockets/ip_adr.json
 Apps/Chatroom/ip_adr.json
 Games/Multiplayer/client/ip_adr.json
@@ -6,3 +5,4 @@ Games/Multiplayer/client/client_data.json
 Games/Multiplayer/server/server_data.json
 Games/Multiplayer/ngrok.exe
 Projects/Sockets/ngrok.exe
+Projects/dc_bot/moderation_bot/token.json
